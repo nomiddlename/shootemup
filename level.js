@@ -25,10 +25,8 @@ RandomLevel.prototype.draw = function(event) {
   startRow = Math.floor((game.windowBottom / this.tileHeight)),
   endRow = Math.ceil(Math.min(startRow + (game.height / this.tileHeight) + 1, level.tiles.length -1)),
   offsetY = game.windowBottom % this.tileHeight;
-//    console.log("StartRow %d, EndRow %d, offsetY %d, windowBottom %d, rowY %d", startRow, endRow, offsetY, game.windowBottom, game.translateY((startRow * level.tileHeight) - offsetY));
   for (var row = startRow; row <= endRow; row++) {
       var posY = game.translateY((row * level.tileHeight));
-  //    console.log("row %d, posY %d", row, posY);
     level.tiles[row].forEach(function(column, index) {
 	var posX = game.translateX(index * level.tileWidth);
 	game.context.fillStyle = "rgb(0," + column + ",0)";
@@ -59,6 +57,6 @@ RandomLevel.prototype.on = function(eventType, cb) {
 };
 
 //support for loading as node.js module, for testing
-if (module) {
+if (typeof(module) !== 'undefined') {
     exports.RandomLevel = RandomLevel;
 }
