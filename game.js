@@ -19,7 +19,7 @@
       }
     });
     game = new Game(canvas.getContext('2d'), canvas.width, canvas.height);
-    level = new RandomLevel(1000);
+    level = new RandomLevel(20000);
 
     game.listen(level);
     game.listen(player);
@@ -86,7 +86,7 @@
   };
 
   Game.prototype.translateY = function(gamePosY) {
-    return this.height - gamePosY - this.windowBottom;
+      return this.height - (gamePosY - this.windowBottom);
   };
 
   Game.prototype.playerMoved = function(event) {
