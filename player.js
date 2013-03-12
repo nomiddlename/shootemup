@@ -6,26 +6,14 @@ function Player(definition) {
   this.width = definition.width;
   this.height = definition.height;
   this.keys = definition.keys;
-
-  this.listeners = [];
-  this.actions = {};
+  this.gun = new PewPewGun(600, 500, 100, 600);
 
   this.on("render", this.draw);
   this.on("tick", this.tick);
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
 }
-
-Player.prototype.listen = function(listener) {
-  this.listeners.push(listener);
-};
-
-Player.prototype.fireEvent = function(eventType, data) {
-  var self = this;
-  this.listeners.forEach(function(listener) {
-    listener.receive(eventType, { source: self, data: data });
-  });
-};
+Player.prototype = Base.prototype;
 
 Player.prototype.tick = function(event) {
   var tockMs = event.data;
@@ -34,16 +22,7 @@ Player.prototype.tick = function(event) {
   if (this.speedX !== 0 || this.speedY !== 0) {
     this.fireEvent("player.move");
   }
-};
 
-Player.prototype.receive = function(eventType, event) {
-  if (this.actions[eventType]) {
-    this.actions[eventType].call(this, event);
-  }
-};
-
-Player.prototype.on = function(eventType, cb) {
-  this.actions[eventType] = cb;
 };
 
 Player.prototype.draw = function(event) {
@@ -58,10 +37,11 @@ Player.prototype.draw = function(event) {
 
 Player.prototype.startMoving = function(event) {
   switch(event.data) {
-  case this.keys.left: this.speedX = -200; break;
-  case this.keys.right: this.speedX = 200; break;
-  case this.keys.up: this.speedY = 200; break;
-  case this.keys.down: this.speedY = -200; break;
+  case this.keys.left: this.speedX = -300; break;
+  case this.keys.right: this.speedX = 300; break;
+  case this.keys.up: this.speedY = 300; break;
+  case this.keys.down: this.speedY = -300; break;
+  case this.keys.fire: this.gun.fire(); break;
   }
 };
 
@@ -71,5 +51,6 @@ Player.prototype.stopMoving = function(event) {
   case this.keys.right: this.speedX = 0; break;
   case this.keys.up: this.speedY = 0; break;
   case this.keys.down: this.speedY = 0; break;
+  case this.keys.fire: this.gun.stopFiring(); break;
   }
 };

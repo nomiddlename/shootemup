@@ -50,30 +50,11 @@
 
     this.on("player.move", this.playerMoved);
   }
-
-  Game.prototype.listen = function(listener) {
-    this.listeners.push(listener);
-  };
-
+  Game.prototype = Base.prototype;
+  
+  
   Game.prototype.tick = function(tockMs) {
     this.fireEvent("tick", tockMs);
-  };
-
-  Game.prototype.fireEvent = function(eventType, data) {
-    var self = this;
-    this.listeners.forEach(function(listener) {
-      listener.receive(eventType, { source: self, data: data });
-    });
-  };
-
-  Game.prototype.receive = function(eventType, event) {
-    if (this.actions[eventType]) {
-      this.actions[eventType].call(this, event);
-    }
-  };
-
-  Game.prototype.on = function(eventType, cb) {
-    this.actions[eventType] = cb;
   };
 
   Game.prototype.render = function() {
