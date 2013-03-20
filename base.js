@@ -3,10 +3,9 @@
  * Provides event handling functions.
  */
 function Base() {
+    this.listeners = [];
+    this.actions = {};
 }
-
-Base.prototype.listeners = [];
-Base.prototype.actions = {};
 
 Base.prototype.listen = function(listener) {
   this.listeners.push(listener);

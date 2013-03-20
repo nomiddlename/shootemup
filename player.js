@@ -1,4 +1,5 @@
 function Player(definition) {
+    Base.call(this);
   this.speedX = definition.speedX;
   this.speedY = definition.speedY;
   this.posX = definition.posX;
@@ -8,12 +9,13 @@ function Player(definition) {
   this.keys = definition.keys;
   this.gun = new PewPewGun(600, 500, 100, 600);
 
+
   this.on("render", this.draw);
   this.on("tick", this.tick);
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
 }
-Player.prototype = Base.prototype;
+Player.prototype = Object.create(Base.prototype);
 
 Player.prototype.tick = function(event) {
   var tockMs = event.data;

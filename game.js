@@ -41,16 +41,14 @@
   }
 
   function Game(context, width, height) {
+      Base.call(this);
     this.context = context;
     this.width = width;
     this.height = height;
     this.windowBottom = 0;
-    this.listeners = [];
-    this.actions = {};
-
     this.on("player.move", this.playerMoved);
   }
-  Game.prototype = Base.prototype;
+  Game.prototype = Object.create(Base.prototype);
   
   
   Game.prototype.tick = function(tockMs) {

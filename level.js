@@ -1,4 +1,5 @@
 function RandomLevel(size) {
+    Base.call(this);
   this.size = size;
   this.tileWidth = 100;
   this.tileHeight = 100;
@@ -16,7 +17,7 @@ function RandomLevel(size) {
 
   this.on("render", this.draw);
 }
-RandomLevel.prototype = Base.prototype;
+RandomLevel.prototype = Object.create(Base.prototype);
 
 RandomLevel.prototype.draw = function(event) {
   var level = this, game = event.source,
