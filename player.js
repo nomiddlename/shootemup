@@ -1,5 +1,5 @@
 function Player(definition) {
-    Base.call(this);
+  Base.call(this);
   this.speedX = definition.speedX;
   this.speedY = definition.speedY;
   this.posX = definition.posX;
@@ -7,8 +7,11 @@ function Player(definition) {
   this.width = definition.width;
   this.height = definition.height;
   this.keys = definition.keys;
-  this.gun = new PewPewGun(600, 500, 100, 600);
 
+  //if you have child objects, you're responsible for sending them events?
+  this.gun = new PewPewGun(this.posX, this.posY + 20, 600, 500, 100, 600, "pew-pew.mp3");
+  this.gun.listen(this);
+  this.listen(this.gun);
 
   this.on("render", this.draw);
   this.on("tick", this.tick);
@@ -24,7 +27,9 @@ Player.prototype.tick = function(event) {
   if (this.speedX !== 0 || this.speedY !== 0) {
     this.fireEvent("player.move");
   }
-
+//  console.log("firing player.tick");
+  //send the event on to the children
+  this.fireEvent("player.tick", tockMs);
 };
 
 Player.prototype.draw = function(event) {
@@ -35,6 +40,7 @@ Player.prototype.draw = function(event) {
   screenY = game.translateY(this.posY);
   game.context.fillStyle = "rgb(20, 20, 200)";
   game.context.fillRect(screenX - (this.width / 2), screenY - (this.height / 2), this.width, this.height);
+  this.fireEvent("player.render", game);
 };
 
 Player.prototype.startMoving = function(event) {

@@ -11,10 +11,18 @@ Base.prototype.listen = function(listener) {
   this.listeners.push(listener);
 };
 
+Base.prototype.removeListener = function(listener) {
+  if (this.listeners.indexOf(listener) > -1) {
+    this.listeners[this.listeners.indexOf(listener)] = null;
+  }
+};
+
 Base.prototype.fireEvent = function(eventType, data) {
   var self = this;
   this.listeners.forEach(function(listener) {
-    listener.receive(eventType, { source: self, data: data });
+    if (listener) {
+      listener.receive(eventType, { source: self, data: data });
+    }
   });
 };
 

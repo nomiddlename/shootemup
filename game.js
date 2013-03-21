@@ -41,7 +41,7 @@
   }
 
   function Game(context, width, height) {
-      Base.call(this);
+    Base.call(this);
     this.context = context;
     this.width = width;
     this.height = height;
