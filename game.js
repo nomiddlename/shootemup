@@ -21,11 +21,6 @@
     game = new Game(canvas.getContext('2d'), canvas.width, canvas.height);
     level = new RandomLevel(20000);
 
-    game.listen(level);
-    game.listen(player);
-    level.listen(game);
-    player.listen(game);
-
     document.addEventListener("keydown", game.handleKeys.bind(game));
     document.addEventListener("keyup", game.handleKeys.bind(game));
     

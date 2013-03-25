@@ -9,9 +9,7 @@ function Player(definition) {
   this.keys = definition.keys;
 
   //if you have child objects, you're responsible for sending them events?
-  this.gun = new PewPewGun(this.posX, this.posY + 20, 600, 500, 100, 600, "pew-pew.mp3");
-  this.gun.listen(this);
-  this.listen(this.gun);
+  this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600, "pew-pew.mp3");
 
   this.on("render", this.draw);
   this.on("tick", this.tick);
