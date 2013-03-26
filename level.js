@@ -44,7 +44,7 @@ RandomLevel.prototype.draw = function(game) {
 RandomLevel.prototype.setupAlienHordes = function() {
   var i
   , startY
-  , numberOfWaves = 5;
+  , numberOfWaves = 10;
 
   this.waves = [];
 
@@ -62,8 +62,6 @@ function BoringWave(posY, numberOfAliens) {
   this.aliens = this.createAliens(numberOfAliens);
 
   Base.call(this);
-
-  this.on("tick", this.tick);
 };
 BoringWave.prototype = Object.create(Base.prototype);  
 
@@ -72,22 +70,19 @@ BoringWave.prototype.createAliens = function(numberOfAliens) {
   , aliens = [];
 
   for (i=0; i < numberOfAliens; i++) {
-    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY));
+    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY, -100));
   }
 
   return aliens;
 };
 
-BoringWave.prototype.tick = function(event) {
-  var tockMs = event.data;
-  //this is where we update the wave's position
-};
-
-function Alien(posX, posY) {
+function Alien(posX, posY, speed) {
   this.posX = posX;
   this.posY = posY;
+  this.speed = speed;
 
   Base.call(this);
+  this.on("tick", this.tick);
   this.fireEvent("render.register", 1);
 }
 Alien.prototype = Object.create(Base.prototype);
@@ -99,6 +94,15 @@ Alien.prototype.draw = function(game) {
    
     game.context.fillStyle = "rgb(200, 50, 100)";
     game.context.fillRect(screenX, screenY, 50, 50);
+  }
+};
+
+Alien.prototype.tick = function(event) {
+  var tockMs = event.data;
+  this.posY += this.speed * (tockMs/1000);
+  if (this.posY <= 0) {
+    //off the bottom of the screen? just give up.
+    this.stopListening();
   }
 };
 
