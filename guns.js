@@ -46,9 +46,8 @@ Bullet.prototype = Object.create(Base.prototype);
 Bullet.prototype.tick = function(event) {
   this.posY += this.speed * (event.data / 1000);
   if (this.posY >= this.startY + this.range) {
-    console.log("Dead Bullet");
     this.fireEvent("render.deregister", 1);
-    this.stopListening("tick", this.tick);
+    this.stopListening("tick");
   }
 };
 

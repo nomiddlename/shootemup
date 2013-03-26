@@ -43,27 +43,26 @@ RandomLevel.prototype.draw = function(game) {
 
 RandomLevel.prototype.setupAlienHordes = function() {
   var i
-  , startX
+  , startY
   , numberOfWaves = 5;
 
   this.waves = [];
 
   //spread the waves out evenly over the level.
   for (i = 0; i < numberOfWaves; i++) {
-    startX = (((this.size - 800) / numberOfWaves)) * i + 800;
-    this.waves[i] = new BoringWave(startX, i); 
+    startY = (((this.size - 800) / numberOfWaves)) * i + 800;
+    this.waves[i] = new BoringWave(startY, i + 1); 
   }
 
 };
 
 
-function BoringWave(posX, numberOfAliens) {
-  this.posX = posX;
+function BoringWave(posY, numberOfAliens) {
+  this.posY = posY;
   this.aliens = this.createAliens(numberOfAliens);
 
   Base.call(this);
 
-  this.fireEvent("render.register", 1);
   this.on("tick", this.tick);
 };
 BoringWave.prototype = Object.create(Base.prototype);  
@@ -73,24 +72,10 @@ BoringWave.prototype.createAliens = function(numberOfAliens) {
   , aliens = [];
 
   for (i=0; i < numberOfAliens; i++) {
-    aliens.push(new Alien(this.posX, Math.ceil(Math.random() * (800 - 50))));
+    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY));
   }
 
   return aliens;
-};
-
-BoringWave.prototype.draw = function(game) {
-  //only need to draw if we're on screen
-  if (game.windowBottom + game.height >= this.posX) {
-    //draw things
-    this.aliens.forEach(function(alien) {
-      var screenX = game.translateX(alien.posX)
-      , screenY = game.translateY(alien.posY);
-   
-      game.context.fillStyle = "rgb(200, 50, 100)";
-      game.context.fillRect(alien.posX, alien.posY, 50, 50);
-    });
-  }
 };
 
 BoringWave.prototype.tick = function(event) {
@@ -103,8 +88,19 @@ function Alien(posX, posY) {
   this.posY = posY;
 
   Base.call(this);
+  this.fireEvent("render.register", 1);
 }
 Alien.prototype = Object.create(Base.prototype);
+
+Alien.prototype.draw = function(game) {
+  if (game.windowBottom + game.height >= this.posY) {
+    var screenX = game.translateX(this.posX)
+    , screenY = game.translateY(this.posY);
+   
+    game.context.fillStyle = "rgb(200, 50, 100)";
+    game.context.fillRect(screenX, screenY, 50, 50);
+  }
+};
 
 //support for loading as node.js module, for testing
 if (typeof(module) !== 'undefined') {
