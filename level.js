@@ -17,13 +17,13 @@ function RandomLevel(size) {
 
   this.setupAlienHordes();
 
-  this.on("render", this.draw);
+  //register us for drawing at zIndex = 0 (right at the bottom)
+  this.fireEvent("render.register", 0);
 }
 RandomLevel.prototype = Object.create(Base.prototype);
 
-RandomLevel.prototype.draw = function(event) {
+RandomLevel.prototype.draw = function(game) {
   var level = this
-  , game = event.source
   , startRow = Math.floor((game.windowBottom / this.tileHeight))
   , endRow = Math.ceil(Math.min(
     startRow + (game.height / this.tileHeight) + 1, 
@@ -63,7 +63,7 @@ function BoringWave(posX, numberOfAliens) {
 
   Base.call(this);
 
-  this.on("render", this.draw);
+  this.fireEvent("render.register", 1);
   this.on("tick", this.tick);
 };
 BoringWave.prototype = Object.create(Base.prototype);  
@@ -79,8 +79,7 @@ BoringWave.prototype.createAliens = function(numberOfAliens) {
   return aliens;
 };
 
-BoringWave.prototype.draw = function(event) {
-  var game = event.source;
+BoringWave.prototype.draw = function(game) {
   //only need to draw if we're on screen
   if (game.windowBottom + game.height >= this.posX) {
     //draw things

@@ -11,10 +11,11 @@ function Player(definition) {
   //if you have child objects, you're responsible for sending them events?
   this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600, "pew-pew.mp3");
 
-  this.on("render", this.draw);
   this.on("tick", this.tick);
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
+
+  this.fireEvent("render.register", 2);
 }
 Player.prototype = Object.create(Base.prototype);
 
@@ -25,20 +26,17 @@ Player.prototype.tick = function(event) {
   if (this.speedX !== 0 || this.speedY !== 0) {
     this.fireEvent("player.move");
   }
-//  console.log("firing player.tick");
-  //send the event on to the children
-  this.fireEvent("player.tick", tockMs);
 };
 
-Player.prototype.draw = function(event) {
-  var game = event.source, screenX, screenY;
+Player.prototype.draw = function(game) {
+  var screenX, screenY;
+
   //posX and posY are in world coords
   //need to translate to canvas coordinates
   screenX = game.translateX(this.posX);
   screenY = game.translateY(this.posY);
   game.context.fillStyle = "rgb(20, 20, 200)";
   game.context.fillRect(screenX - (this.width / 2), screenY - (this.height / 2), this.width, this.height);
-  this.fireEvent("player.render", game);
 };
 
 Player.prototype.startMoving = function(event) {

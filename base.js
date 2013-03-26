@@ -3,28 +3,32 @@
  * Provides event handling functions.
  */
 function Base() {
+  this.actions = {};
 }
-Base.prototype.listeners = {};
+Base.prototype.listeners = [];
 
 Base.prototype.on = function(eventType, listener) {
-  if (!this.listeners[eventType]) {
-    this.listeners[eventType] = [];
+  if (this.listeners.indexOf(this) === -1) {
+    this.listeners.push(this);
   }
-  this.listeners[eventType].push(listener.bind(this));
+  this.actions[eventType] = listener;
 };
 
-Base.prototype.stopListening = function(eventType, listener) {
-  this.listeners[eventType] = this.listeners[eventType].filter(function(item) { return listener === item; });
+Base.prototype.stopListening = function(eventType) {
+  var self = this;
+  if (eventType) {
+    this.actions[eventType] = null;
+  } else {
+    this.listeners = this.listeners.filter(function(item) { return item === self; });
+  }
 };
 
 Base.prototype.fireEvent = function(eventType, data) {
   var self = this;
-  if (this.listeners[eventType]) {
-    this.listeners[eventType].forEach(function(listener) {
-      if (listener) {
-        listener.call(null, { source: self, data: data });
-      }
-    });
-  }
+  this.listeners.forEach(function(listener) {
+    if (listener.actions[eventType]) {
+      listener.actions[eventType].call(listener, { source: self, data: data });
+    }
+  });
 };
 

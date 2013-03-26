@@ -9,7 +9,6 @@ function PewPewGun(posX, posY, speed, rate, damage, range, soundEffect) {
   this.posY = posY;
 
   this.on("player.move", this.updatePosition);
-//  this.on("bullet.end", this.removeBullet);
 }
 PewPewGun.prototype = Object.create(Base.prototype);
 
@@ -29,7 +28,6 @@ PewPewGun.prototype.updatePosition = function(event) {
   this.posY = player.posY + player.height;
 };
 
-
 function Bullet(posX, posY, speed, damage, range) {
   Base.call(this);
   this.posX = posX;
@@ -40,25 +38,23 @@ function Bullet(posX, posY, speed, damage, range) {
   this.range = range;
 
   this.on("tick", this.tick);
-  this.on("render", this.draw);
+  this.fireEvent("render.register", 1);
 };
 Bullet.prototype = Object.create(Base.prototype);
 
 //bullet needs draw, tick functions
 Bullet.prototype.tick = function(event) {
   this.posY += this.speed * (event.data / 1000);
-  //console.log("in bullet.tick, with posY = ", this.posY);
   if (this.posY >= this.startY + this.range) {
-    this.fireEvent("bullet.end");
+    console.log("Dead Bullet");
+    this.fireEvent("render.deregister", 1);
+    this.stopListening("tick", this.tick);
   }
 };
 
-Bullet.prototype.draw = function(event) {
-  var game = event.source
-  , screenX = game.translateX(this.posX - 5)
+Bullet.prototype.draw = function(game) {
+  var screenX = game.translateX(this.posX - 5)
   , screenY = game.translateY(this.posY);
-
-  //console.log("In bullet.draw");
 
   game.context.fillStyle = "rgb(200, 20, 20)";
   game.context.fillRect(screenX, screenY, 10, 40);
