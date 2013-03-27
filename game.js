@@ -21,7 +21,10 @@
 
   function Game() {
     Base.call(this);
-    this.windowBottom = 0;
+    this.windowX = 2500;
+    this.windowY = 2500;
+    this.width = 800;
+    this.height = 600;
     this.zIndices = [];
     this.renderList = {};
 
@@ -34,8 +37,8 @@
       {
         speedX: 0, //in game pixels per second
         speedY: 0, //in game pixels per second
-        posX: 300,   //in game coords
-        posY: 100,    //in game coords
+        posX: this.windowX + (this.width / 2),    //in game coords
+        posY: this.windowY + (this.height / 2),    //in game coords
         width: 50,
         height: 50,
         health: 100,
@@ -48,7 +51,7 @@
         }
       }
     );
-    this.level = new RandomLevel(20000);
+    this.level = new RandomLevel(5000, 5000);
   }
   Game.prototype = Object.create(Base.prototype);
 
@@ -60,7 +63,7 @@
   
   Game.prototype.tick = function(tockMs) {
     this.fireEvent("tick", tockMs);
-    this.changeWindowBottom();
+    this.moveWindow();
   };
 
   Game.prototype.addToRenderList = function(event) {
@@ -88,17 +91,28 @@
   };
 
   Game.prototype.translateX = function(gamePosX) {
-    return gamePosX;
+    return gamePosX - this.windowX;
   };
 
   Game.prototype.translateY = function(gamePosY) {
-      return this.height - (gamePosY - this.windowBottom);
+    //canvas y has 0 at the top, so we need to subtract from height
+    return this.height - (gamePosY - this.windowY);
   };
 
 
-  Game.prototype.changeWindowBottom = function() {
-    //window bottom will always be about 100px below player
-    this.windowBottom = this.player.posY - 100;
+  Game.prototype.moveWindow = function() {
+    //we want to move the window when the player gets within 100px of
+    //the edges of the screen
+    //but let's start with centring the player on the screen
+    this.windowX = this.player.posX - (this.width / 2);
+    this.windowY = this.player.posY - (this.height / 2);
+  };
+
+  Game.prototype.isOnScreen = function(thing) {
+    return (thing.posX > this.windowX) 
+      && (thing.posX < this.windowX + this.width)
+      && (thing.posY > this.windowY)
+      && (thing.posY < this.windowY + this.height);
   };
 
   Game.prototype.handleKeys = function(event) {

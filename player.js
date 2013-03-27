@@ -19,6 +19,9 @@ function Player(definition) {
   this.fireEvent("render.register", 2);
   //we want to take part in the physics of the world
   this.fireEvent("physics.register");
+  //we have to let the rest of the world know where we are,
+  //unfortunately.
+  setInterval(this.fireEvent.bind(this, "player.move"), 200);
 }
 Player.prototype = Object.create(Base.prototype);
 

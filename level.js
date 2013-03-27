@@ -1,16 +1,19 @@
-function RandomLevel(size) {
+function RandomLevel(width, height) {
   Base.call(this);
-  this.size = size;
+  this.width = width;
+  this.height = height;
   this.tileWidth = 100;
   this.tileHeight = 100;
-  this.columns = 800 / this.tileWidth; //dodgy hard-coding
-  this.rows = this.size / this.tileHeight;
+  this.columns = this.width / this.tileWidth; 
+  this.rows = this.height / this.tileHeight;
   this.tiles = [];
   
   for (var y = 0; y < this.rows; y++) {
     var row = [];
     for (var x = 0; x < this.columns; x++) {
-      row.push((y * this.tileHeight) % 256);  
+      var xColour = (x * this.tileWidth) % 256;
+      var yColour = (y * this.tileHeight) % 256;
+      row.push("rgb("+xColour+", "+yColour+", "+xColour+")");  
     }
     this.tiles.push(row);
   }
@@ -20,25 +23,30 @@ function RandomLevel(size) {
   //register us for drawing at zIndex = 0 (right at the bottom)
   this.fireEvent("render.register", 0);
   //let the game know how big we are
-  this.fireEvent("boundary", { left: 0, right: 800, bottom: 100, top: this.size - 700 });
+  this.fireEvent("boundary", { left: 0, right: this.width, bottom: 0, top: this.height });
 }
 RandomLevel.prototype = Object.create(Base.prototype);
 
 RandomLevel.prototype.draw = function(game) {
   var level = this
-  , startRow = Math.max(0, Math.floor((game.windowBottom / this.tileHeight)))
+  , startRow = Math.max(0, Math.floor((game.windowY / this.tileHeight)))
   , endRow = Math.ceil(Math.min(
     startRow + (game.height / this.tileHeight) + 1, 
     level.tiles.length -1))
-  , offsetY = game.windowBottom % this.tileHeight;
+  , startCol = Math.max(0, Math.floor((game.windowX / this.tileWidth)))
+  , endCol = Math.ceil(Math.min(
+    startCol + (game.width / this.tileWidth) + 1, 
+    level.tiles[startRow].length -1))
+  , offsetX = game.windowX % this.tileWidth
+  , offsetY = game.windowY % this.tileHeight;
 
   for (var row = startRow; row <= endRow; row++) {
     var posY = game.translateY((row * level.tileHeight));
-    level.tiles[row].forEach(function(column, index) {
-      var posX = game.translateX(index * level.tileWidth);
-      game.context.fillStyle = "rgb(0," + column + ",0)";
+    for (var col = startCol; col <= endCol; col++) {
+      var posX = game.translateX(col * level.tileWidth);
+      game.context.fillStyle = level.tiles[row][col];
       game.context.fillRect(posX, posY, level.tileWidth, level.tileHeight);
-    });
+    };
   }
 
 };
@@ -46,56 +54,39 @@ RandomLevel.prototype.draw = function(game) {
 RandomLevel.prototype.setupAlienHordes = function() {
   var i
   , startY
-  , numberOfWaves = 10;
+  , numberOfAliens = 10;
 
-  this.waves = [];
-
-  //spread the waves out evenly over the level.
-  for (i = 0; i < numberOfWaves; i++) {
-    startY = (((this.size - 800) / numberOfWaves)) * i + 800;
-    this.waves[i] = new BoringWave(startY, i + 1); 
+  //spread the aliens out evenly over the level.
+  for (i = 0; i < numberOfAliens; i++) {
+    startX = Math.round((Math.random() * (this.width - 200)) + 100);
+    startY = Math.round((Math.random() * (this.height - 200)) + 100);
+    var alien = new Alien(startX, startY, 100, 100);
+    console.log("created alien ", alien);
   }
-
-};
-
-
-function BoringWave(posY, numberOfAliens) {
-  this.posY = posY;
-  this.aliens = this.createAliens(numberOfAliens);
-
-  Base.call(this);
-};
-BoringWave.prototype = Object.create(Base.prototype);  
-
-BoringWave.prototype.createAliens = function(numberOfAliens) {
-  var i
-  , aliens = [];
-
-  for (i=0; i < numberOfAliens; i++) {
-    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY, -100, 100));
-  }
-
-  return aliens;
 };
 
 function Alien(posX, posY, speed, health) {
   this.posX = posX;
   this.posY = posY;
+  this.speed = speed;
   this.speedX = 0;
   this.speedY = speed;
   this.width = 50;
   this.height = 50;
   this.health = health;
+  this.playerX = 0;
+  this.playerY = 0;
 
   Base.call(this);
   this.on("tick", this.tick);
+  this.on("player.move", this.updatePlayerPosition);
   this.fireEvent("render.register", 1);
   this.fireEvent("physics.register");
 }
 Alien.prototype = Object.create(Base.prototype);
 
 Alien.prototype.draw = function(game) {
-  if (game.windowBottom + game.height >= this.posY) {
+  if (game.isOnScreen(this)) {
     var screenX = game.translateX(this.posX - (this.width / 2))
     , screenY = game.translateY(this.posY - (this.height / 2));
    
@@ -105,11 +96,22 @@ Alien.prototype.draw = function(game) {
 };
 
 Alien.prototype.tick = function(event) {
-  if (this.posY <= 0) {
-    //off the bottom of the screen? just give up.
-    this.fireEvent("physics.deregister");
-    this.fireEvent("render.deregister", 1);
-  }
+  //need to work out a normalised vector between our position and the
+  //player's position, then multiply it by our speed
+  var dx = (this.playerX - this.posX)
+  , dy = (this.playerY - this.posY)
+  , magnitude = Math.sqrt(dx*dx + dy*dy);
+
+  this.speedX = dx * this.speed / magnitude;
+  this.speedY = dy * this.speed / magnitude;
+
+//  console.log("Alien position is (%d, %d)", this.posX, this.posY);
+
+};
+
+Alien.prototype.updatePlayerPosition = function(event) {
+  this.playerX = event.source.posX;
+  this.playerY = event.source.posY;
 };
 
 //support for loading as node.js module, for testing

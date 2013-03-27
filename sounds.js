@@ -37,6 +37,7 @@ SoundEngine.prototype.createSoundBuffers = function(loadedSounds) {
 };
 
 //taken from http://www.html5rocks.com/en/tutorials/webaudio/intro/
+//messed about with a bit by me, though.
 function BufferLoader(context, soundMap, callback) {
   this.context = context;
   this.soundMap = soundMap;
