@@ -9,7 +9,7 @@ function Player(definition) {
   this.keys = definition.keys;
   this.health = definition.health;
 
-  this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600, "pew-pew.mp3");
+  this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600);
 
   this.on("tick", this.updateGunPosition);
   this.on("keydown", this.startMoving);

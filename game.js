@@ -29,6 +29,7 @@
     this.on("render.deregister", this.removeFromRenderList);
 
     this.physics = new PhysicsEngine();
+    this.sounds = new SoundEngine();
     this.player = new Player(
       {
         speedX: 0, //in game pixels per second

@@ -1,19 +1,17 @@
-function PewPewGun(posX, posY, speed, rate, damage, range, soundEffect) {
+function PewPewGun(posX, posY, speed, rate, damage, range) {
   Base.call(this);
   this.speed = speed;
   this.rate = rate;
   this.damage = damage;
   this.range = range;
-  this.soundEffect = soundEffect;
   this.posX = posX;
   this.posY = posY;
-
 }
 PewPewGun.prototype = Object.create(Base.prototype);
 
 PewPewGun.prototype.fire = function() {
   var bullet = new Bullet(this.posX, this.posY, this.speed, this.damage, this.range);
-  this.fireEvent("sounds", this.soundEffect);
+  this.fireEvent("sounds", "pew-pew");
 };
 
 PewPewGun.prototype.stopFiring = function() {

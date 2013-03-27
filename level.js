@@ -81,31 +81,34 @@ BoringWave.prototype.createAliens = function(numberOfAliens) {
 function Alien(posX, posY, speed, health) {
   this.posX = posX;
   this.posY = posY;
-  this.speed = speed;
+  this.speedX = 0;
+  this.speedY = speed;
+  this.width = 50;
+  this.height = 50;
   this.health = health;
 
   Base.call(this);
   this.on("tick", this.tick);
   this.fireEvent("render.register", 1);
+  this.fireEvent("physics.register");
 }
 Alien.prototype = Object.create(Base.prototype);
 
 Alien.prototype.draw = function(game) {
   if (game.windowBottom + game.height >= this.posY) {
-    var screenX = game.translateX(this.posX)
-    , screenY = game.translateY(this.posY);
+    var screenX = game.translateX(this.posX - (this.width / 2))
+    , screenY = game.translateY(this.posY - (this.height / 2));
    
     game.context.fillStyle = "rgb(200, 50, 100)";
-    game.context.fillRect(screenX, screenY, 50, 50);
+    game.context.fillRect(screenX, screenY, this.width, this.height);
   }
 };
 
 Alien.prototype.tick = function(event) {
-  var tockMs = event.data;
-  this.posY += this.speed * (tockMs/1000);
   if (this.posY <= 0) {
     //off the bottom of the screen? just give up.
-    this.stopListening();
+    this.fireEvent("physics.deregister");
+    this.fireEvent("render.deregister", 1);
   }
 };
 
