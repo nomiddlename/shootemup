@@ -25,10 +25,10 @@
     this.zIndices = [];
     this.renderList = {};
 
-    this.on("player.move", this.playerMoved);
     this.on("render.register", this.addToRenderList);
     this.on("render.deregister", this.removeFromRenderList);
 
+    this.physics = new PhysicsEngine();
     this.player = new Player(
       {
         speedX: 0, //in game pixels per second
@@ -37,6 +37,7 @@
         posY: 100,    //in game coords
         width: 50,
         height: 50,
+        health: 100,
         keys: {
           left: 'a',
           right: 'd',
@@ -58,6 +59,7 @@
   
   Game.prototype.tick = function(tockMs) {
     this.fireEvent("tick", tockMs);
+    this.changeWindowBottom();
   };
 
   Game.prototype.addToRenderList = function(event) {
@@ -92,22 +94,10 @@
       return this.height - (gamePosY - this.windowBottom);
   };
 
-  Game.prototype.playerMoved = function(event) {
-    this.checkForCollisions(event.source);
-    this.changeWindowBottom(event.source);
-  };
 
-  Game.prototype.checkForCollisions = function(thing) {
-    thing.posX = Math.max(thing.posX, thing.width / 2);
-    thing.posX = Math.min(thing.posX, this.width - thing.width / 2);
-
-    thing.posY = Math.max(thing.posY, 100);
-    thing.posY = Math.min(thing.posY, this.level.size - this.height + 100);
-  };
-
-  Game.prototype.changeWindowBottom = function(thing) {
+  Game.prototype.changeWindowBottom = function() {
     //window bottom will always be about 100px below player
-    this.windowBottom = thing.posY - 100;
+    this.windowBottom = this.player.posY - 100;
   };
 
   Game.prototype.handleKeys = function(event) {

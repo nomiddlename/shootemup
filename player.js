@@ -7,26 +7,20 @@ function Player(definition) {
   this.width = definition.width;
   this.height = definition.height;
   this.keys = definition.keys;
+  this.health = definition.health;
 
-  //if you have child objects, you're responsible for sending them events?
   this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600, "pew-pew.mp3");
 
-  this.on("tick", this.tick);
+  this.on("tick", this.updateGunPosition);
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
 
+  //we want to be rendered at zIndex 2
   this.fireEvent("render.register", 2);
+  //we want to take part in the physics of the world
+  this.fireEvent("physics.register");
 }
 Player.prototype = Object.create(Base.prototype);
-
-Player.prototype.tick = function(event) {
-  var tockMs = event.data;
-  this.posX += (tockMs / 1000.0) * this.speedX;
-  this.posY += (tockMs / 1000.0) * this.speedY;
-  if (this.speedX !== 0 || this.speedY !== 0) {
-    this.fireEvent("player.move");
-  }
-};
 
 Player.prototype.draw = function(game) {
   var screenX, screenY;
@@ -57,4 +51,8 @@ Player.prototype.stopMoving = function(event) {
   case this.keys.down: this.speedY = 0; break;
   case this.keys.fire: this.gun.stopFiring(); break;
   }
+};
+
+Player.prototype.updateGunPosition = function(event) {
+  this.gun.updatePosition(this.posX, this.posY + this.height);
 };

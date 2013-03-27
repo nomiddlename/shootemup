@@ -19,12 +19,14 @@ function RandomLevel(size) {
 
   //register us for drawing at zIndex = 0 (right at the bottom)
   this.fireEvent("render.register", 0);
+  //let the game know how big we are
+  this.fireEvent("boundary", { left: 0, right: 800, bottom: 100, top: this.size - 700 });
 }
 RandomLevel.prototype = Object.create(Base.prototype);
 
 RandomLevel.prototype.draw = function(game) {
   var level = this
-  , startRow = Math.floor((game.windowBottom / this.tileHeight))
+  , startRow = Math.max(0, Math.floor((game.windowBottom / this.tileHeight)))
   , endRow = Math.ceil(Math.min(
     startRow + (game.height / this.tileHeight) + 1, 
     level.tiles.length -1))
@@ -70,16 +72,17 @@ BoringWave.prototype.createAliens = function(numberOfAliens) {
   , aliens = [];
 
   for (i=0; i < numberOfAliens; i++) {
-    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY, -100));
+    aliens.push(new Alien(Math.ceil(Math.random() * (800 - 50)), this.posY, -100, 100));
   }
 
   return aliens;
 };
 
-function Alien(posX, posY, speed) {
+function Alien(posX, posY, speed, health) {
   this.posX = posX;
   this.posY = posY;
   this.speed = speed;
+  this.health = health;
 
   Base.call(this);
   this.on("tick", this.tick);
