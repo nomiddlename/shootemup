@@ -54,14 +54,13 @@ RandomLevel.prototype.draw = function(game) {
 RandomLevel.prototype.setupAlienHordes = function() {
   var i
   , startY
-  , numberOfAliens = 10;
+  , numberOfAliens = 30;
 
   //spread the aliens out evenly over the level.
   for (i = 0; i < numberOfAliens; i++) {
     startX = Math.round((Math.random() * (this.width - 200)) + 100);
     startY = Math.round((Math.random() * (this.height - 200)) + 100);
-    var alien = new Alien(startX, startY, 100, 100);
-    console.log("created alien ", alien);
+    new Alien(startX, startY, 100, 100);
   }
 };
 
@@ -69,17 +68,16 @@ function Alien(posX, posY, speed, health) {
   this.posX = posX;
   this.posY = posY;
   this.speed = speed;
-  this.speedX = 0;
-  this.speedY = speed;
-  this.width = 50;
-  this.height = 50;
+  this.speedX = (Math.random() - 0.5) * 2 * speed;
+  this.speedY = (Math.random() - 0.5) * 2 * speed;
+  this.radius = 25;
   this.health = health;
   this.playerX = 0;
   this.playerY = 0;
 
   Base.call(this);
-  this.on("tick", this.tick);
-  this.on("player.move", this.updatePlayerPosition);
+  //this.on("tick", this.tick);
+  //this.on("player.move", this.updatePlayerPosition);
   this.fireEvent("render.register", 1);
   this.fireEvent("physics.register");
 }
@@ -87,11 +85,14 @@ Alien.prototype = Object.create(Base.prototype);
 
 Alien.prototype.draw = function(game) {
   if (game.isOnScreen(this)) {
-    var screenX = game.translateX(this.posX - (this.width / 2))
-    , screenY = game.translateY(this.posY - (this.height / 2));
+    var screenX = game.translateX(this.posX)
+    , screenY = game.translateY(this.posY);
    
     game.context.fillStyle = "rgb(200, 50, 100)";
-    game.context.fillRect(screenX, screenY, this.width, this.height);
+    game.context.beginPath();
+    game.context.arc(screenX, screenY, this.radius, 0, Math.PI*2, true);
+    game.context.closePath();
+    game.context.fill();
   }
 };
 
@@ -104,8 +105,6 @@ Alien.prototype.tick = function(event) {
 
   this.speedX = dx * this.speed / magnitude;
   this.speedY = dy * this.speed / magnitude;
-
-//  console.log("Alien position is (%d, %d)", this.posX, this.posY);
 
 };
 

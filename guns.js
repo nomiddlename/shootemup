@@ -1,36 +1,39 @@
-function PewPewGun(posX, posY, speed, rate, damage, range) {
+function PewPewGun(speed, rate, damage, range) {
   Base.call(this);
   this.speed = speed;
   this.rate = rate;
   this.damage = damage;
   this.range = range;
-  this.posX = posX;
-  this.posY = posY;
 }
 PewPewGun.prototype = Object.create(Base.prototype);
 
-PewPewGun.prototype.fire = function() {
-  var bullet = new Bullet(this.posX, this.posY, this.speed, this.damage, this.range);
+PewPewGun.prototype.fire = function(posX, posY, speedX, speedY) {
+  var magnitude = Math.sqrt(speedX*speedX + speedY*speedY)
+  , directionX = speedX / magnitude
+  , directionY = speedY / magnitude
+  , bullet = new Bullet(
+    posX, 
+    posY, 
+    directionX * this.speed, 
+    directionY * this.speed, 
+    this.damage, 
+    this.range
+  );
   this.fireEvent("sounds", "pew-pew");
 };
 
 PewPewGun.prototype.stopFiring = function() {
 };
 
-PewPewGun.prototype.updatePosition = function(x, y) {
-  this.posX = x;
-  this.posY = y;
-};
-
-function Bullet(posX, posY, speed, damage, range) {
+function Bullet(posX, posY, speedX, speedY, damage, range) {
   Base.call(this);
   this.posX = posX;
   this.posY = posY;
-  this.width = 10;
-  this.height = 40;
+  this.radius = 5;
+  this.startX = posX;
   this.startY = posY;
-  this.speedX = 0.0;
-  this.speedY = speed;
+  this.speedX = speedX;
+  this.speedY = speedY;
   this.damage = damage;
   this.range = range;
 
@@ -42,15 +45,20 @@ Bullet.prototype = Object.create(Base.prototype);
 
 Bullet.prototype.tick = function(event) {
   //check if we're dead yet.
-  if (this.posY >= this.startY + this.range) {
+  var distanceTravelled = Math.sqrt(Math.pow(this.posX - this.startX, 2) + Math.pow(this.posY - this.startY, 2));
+  if (distanceTravelled > this.range) {
     this.fireEvent("render.deregister", 1);
     this.fireEvent("physics.deregister");
+    this.stopListening("tick");
   }
 };
 
 Bullet.prototype.draw = function(game) {
-  var screenX = game.translateX(this.posX - (this.width / 2))
+  var screenX = game.translateX(this.posX)
   , screenY = game.translateY(this.posY);
   game.context.fillStyle = "rgb(200, 20, 20)";
-  game.context.fillRect(screenX, screenY, this.width, this.height);
+  game.context.beginPath();
+  game.context.arc(screenX, screenY, this.radius, 0, Math.PI * 2, true);
+  game.context.closePath();
+  game.context.fill();
 };

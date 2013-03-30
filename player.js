@@ -4,14 +4,12 @@ function Player(definition) {
   this.speedY = definition.speedY;
   this.posX = definition.posX;
   this.posY = definition.posY;
-  this.width = definition.width;
-  this.height = definition.height;
+  this.radius = definition.radius;
   this.keys = definition.keys;
   this.health = definition.health;
 
-  this.gun = new PewPewGun(this.posX, this.posY + this.height, 600, 500, 100, 600);
+  this.gun = new PewPewGun(600, 500, 100, 600);
 
-  this.on("tick", this.updateGunPosition);
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
 
@@ -33,7 +31,15 @@ Player.prototype.draw = function(game) {
   screenX = game.translateX(this.posX);
   screenY = game.translateY(this.posY);
   game.context.fillStyle = "rgb(20, 20, 200)";
-  game.context.fillRect(screenX - (this.width / 2), screenY - (this.height / 2), this.width, this.height);
+  game.context.beginPath();
+  game.context.arc(screenX, screenY, this.radius, 0, Math.PI*2, true);
+  game.context.closePath();
+  game.context.fill();
+};
+
+Player.prototype.fireTheGun = function() {
+  var speedY = Math.abs(this.speedX) == 0 && Math.abs(this.speedY) == 0 ? 600 : this.speedY;
+  this.gun.fire(this.posX, this.posY, this.speedX, speedY);
 };
 
 Player.prototype.startMoving = function(event) {
@@ -42,9 +48,10 @@ Player.prototype.startMoving = function(event) {
   case this.keys.right: this.speedX = 300; break;
   case this.keys.up: this.speedY = 300; break;
   case this.keys.down: this.speedY = -300; break;
-  case this.keys.fire: this.gun.fire(); break;
+  case this.keys.fire: this.fireTheGun(); break;
   }
 };
+
 
 Player.prototype.stopMoving = function(event) {
   switch(event.data) {
@@ -56,6 +63,3 @@ Player.prototype.stopMoving = function(event) {
   }
 };
 
-Player.prototype.updateGunPosition = function(event) {
-  this.gun.updatePosition(this.posX, this.posY + this.height);
-};

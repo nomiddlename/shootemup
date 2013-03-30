@@ -39,8 +39,7 @@
         speedY: 0, //in game pixels per second
         posX: this.windowX + (this.width / 2),    //in game coords
         posY: this.windowY + (this.height / 2),    //in game coords
-        width: 50,
-        height: 50,
+        radius: 25,
         health: 100,
         keys: {
           left: 'a',
@@ -109,10 +108,10 @@
   };
 
   Game.prototype.isOnScreen = function(thing) {
-    return (thing.posX > this.windowX) 
-      && (thing.posX < this.windowX + this.width)
-      && (thing.posY > this.windowY)
-      && (thing.posY < this.windowY + this.height);
+    return (thing.posX + thing.radius > this.windowX) 
+      && (thing.posX  - thing.radius < this.windowX + this.width)
+      && (thing.posY + thing.radius > this.windowY)
+      && (thing.posY - thing.radius < this.windowY + this.height);
   };
 
   Game.prototype.handleKeys = function(event) {
