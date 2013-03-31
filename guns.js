@@ -19,7 +19,7 @@ PewPewGun.prototype.fire = function(posX, posY, speedX, speedY) {
     this.damage, 
     this.range
   );
-  this.fireEvent("sounds", "pew-pew");
+  this.fireEvent("sounds", { name: "pew-pew", volume: 1.0 });
 };
 
 PewPewGun.prototype.stopFiring = function() {
@@ -36,6 +36,7 @@ function Bullet(posX, posY, speedX, speedY, damage, range) {
   this.speedY = speedY;
   this.damage = damage;
   this.range = range;
+  this.bullet = true;
 
   this.on("tick", this.tick);
   this.fireEvent("render.register", 1);

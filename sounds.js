@@ -2,8 +2,12 @@ function SoundEngine() {
   Base.call(this);
 
   this.context = new webkitAudioContext();
+  this.gainNode = this.context.createGainNode();
+  this.gainNode.connect(this.context.destination);
+
   this.sounds = {
-    "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav"
+    "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav",
+    "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav"
   };
   this.soundBuffers = {};
   this.loadSounds();
@@ -13,11 +17,14 @@ function SoundEngine() {
 SoundEngine.prototype = Object.create(Base.prototype);
 
 SoundEngine.prototype.playSound = function(event) {
-  var soundName = event.data, source;
+  var soundName = event.data.name
+  , volume = event.data.volume
+  , source;
   if (this.soundBuffers[soundName]) {
     source = this.context.createBufferSource();
     source.buffer = this.soundBuffers[soundName];
-    source.connect(this.context.destination);
+    source.connect(this.gainNode);
+    this.gainNode.gain.value = volume;
     source.noteOn(0);
   }
 };

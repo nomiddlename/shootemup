@@ -28,7 +28,7 @@ Player.prototype.update = function(event) {
   var tockMs = event.data;
   if (this.physBody) {
     if (Math.abs(this.speedX) > 0 || Math.abs(this.speedY) > 0) {
-      this.physBody.ApplyForce(new Vec2(this.speedX, this.speedY));
+      this.physBody.ApplyForce(new Vec2(this.speedX, this.speedY), this.physBody.GetPosition());
     }
   }
 

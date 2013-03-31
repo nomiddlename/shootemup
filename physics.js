@@ -112,14 +112,17 @@ PhysicsEngine.prototype.addAThing = function(event) {
   , fixtureDef = new FixtureDef();
 
   bodyDef.type = Body.b2_dynamicBody;
-  bodyDef.fixedRotation = true;
   bodyDef.position = new Vec2(
     this.scaleToWorld(event.source.posX),
     this.scaleToWorld(event.source.posY)
   );
 
+  if (event.source.bullet) {
+    bodyDef.bullet = true;
+  }
+
   fixtureDef.density = 1.0;
-  fixtureDef.friction = 0.0;
+  fixtureDef.friction = 0.2;
   fixtureDef.restitution = 0.8;
   fixtureDef.shape = new CircleShape(this.scaleToWorld(event.source.radius));
   
@@ -151,10 +154,13 @@ PhysicsEngine.prototype.preSolve = function() {
   //do nothing for now.
 };
 
-PhysicsEngine.prototype.postSolve = function(bodyA, bodyB, impulses) {
+PhysicsEngine.prototype.postSolve = function(contact, impulses) {
+  var bodyA = contact.GetFixtureA().GetBody()
+  , bodyB = contact.GetFixtureB().GetBody();
   if (bodyA.GetUserData && bodyB.GetUserData) {
     if (bodyA.GetUserData() && bodyB.GetUserData()) {
-      console.log("Bump! A = ", bodyA, "; B = ", bodyB);
+      //console.log("Bump! A = ", bodyA, "; B = ", bodyB);
+      this.fireEvent("sounds", { name: "bounce", volume: 0.8 });
     }
   }
 //  bodyA.GetUserData().hitBy(bodyB.GetUserData(), impulses[0]);
