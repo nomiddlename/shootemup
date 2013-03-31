@@ -58,9 +58,9 @@ RandomLevel.prototype.setupAlienHordes = function() {
 
   //spread the aliens out evenly over the level.
   for (i = 0; i < numberOfAliens; i++) {
-    startX = Math.round((Math.random() * (this.width - 200)) + 100);
-    startY = Math.round((Math.random() * (this.height - 200)) + 100);
-    new Alien(startX, startY, 100, 100);
+    startX = Math.round((Math.random() * (this.width - 800)) + 100);
+    startY = Math.round((Math.random() * (this.height - 600)) + 100);
+    new Alien(startX, startY, 15, 100);
   }
 };
 
@@ -84,15 +84,17 @@ function Alien(posX, posY, speed, health) {
 Alien.prototype = Object.create(Base.prototype);
 
 Alien.prototype.draw = function(game) {
-  if (game.isOnScreen(this)) {
-    var screenX = game.translateX(this.posX)
-    , screenY = game.translateY(this.posY);
-   
-    game.context.fillStyle = "rgb(200, 50, 100)";
-    game.context.beginPath();
-    game.context.arc(screenX, screenY, this.radius, 0, Math.PI*2, true);
-    game.context.closePath();
-    game.context.fill();
+  if (this.physBody) {
+    var screenX = game.physics.scaleToPixels(this.physBody.GetPosition().x)
+    , screenY = game.physics.scaleToPixels(this.physBody.GetPosition().y);
+  
+    if (game.isOnScreen(screenX, screenY, this.radius)) {
+      game.context.fillStyle = "rgb(200, 50, 100)";
+      game.context.beginPath();
+      game.context.arc(game.translateX(screenX), game.translateY(screenY), this.radius, 0, Math.PI*2, true);
+      game.context.closePath();
+      game.context.fill();
+    }
   }
 };
 

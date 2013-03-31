@@ -15,14 +15,15 @@
       lastTime = now;
       window.requestAnimationFrame(mainLoop);
       game.tick(delta);
+      game.physics.updateWorld();
       game.render();
     })();
   };
 
   function Game() {
     Base.call(this);
-    this.windowX = 2500;
-    this.windowY = 2500;
+    this.windowX = 2100;
+    this.windowY = 2200;
     this.width = 800;
     this.height = 600;
     this.zIndices = [];
@@ -51,6 +52,7 @@
       }
     );
     this.level = new RandomLevel(5000, 5000);
+
   }
   Game.prototype = Object.create(Base.prototype);
 
@@ -87,6 +89,7 @@
         thing.draw.call(thing, self);
       });
     });
+
   };
 
   Game.prototype.translateX = function(gamePosX) {
@@ -94,8 +97,7 @@
   };
 
   Game.prototype.translateY = function(gamePosY) {
-    //canvas y has 0 at the top, so we need to subtract from height
-    return this.height - (gamePosY - this.windowY);
+    return gamePosY - this.windowY;
   };
 
 
@@ -107,11 +109,11 @@
     this.windowY = this.player.posY - (this.height / 2);
   };
 
-  Game.prototype.isOnScreen = function(thing) {
-    return (thing.posX + thing.radius > this.windowX) 
-      && (thing.posX  - thing.radius < this.windowX + this.width)
-      && (thing.posY + thing.radius > this.windowY)
-      && (thing.posY - thing.radius < this.windowY + this.height);
+  Game.prototype.isOnScreen = function(posX, posY, radius) {
+    return (posX + radius > this.windowX) 
+      && (posX - radius < this.windowX + this.width)
+      && (posY + radius > this.windowY)
+      && (posY - radius < this.windowY + this.height);
   };
 
   Game.prototype.handleKeys = function(event) {

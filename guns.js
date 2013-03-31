@@ -44,9 +44,8 @@ function Bullet(posX, posY, speedX, speedY, damage, range) {
 Bullet.prototype = Object.create(Base.prototype);
 
 Bullet.prototype.tick = function(event) {
-  //check if we're dead yet.
-  var distanceTravelled = Math.sqrt(Math.pow(this.posX - this.startX, 2) + Math.pow(this.posY - this.startY, 2));
-  if (distanceTravelled > this.range) {
+  this.range -= 1;
+  if (this.range <= 0) {
     this.fireEvent("render.deregister", 1);
     this.fireEvent("physics.deregister");
     this.stopListening("tick");
@@ -54,11 +53,13 @@ Bullet.prototype.tick = function(event) {
 };
 
 Bullet.prototype.draw = function(game) {
-  var screenX = game.translateX(this.posX)
-  , screenY = game.translateY(this.posY);
-  game.context.fillStyle = "rgb(200, 20, 20)";
-  game.context.beginPath();
-  game.context.arc(screenX, screenY, this.radius, 0, Math.PI * 2, true);
-  game.context.closePath();
-  game.context.fill();
+  if (this.physBody) {
+    var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
+    , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
+    game.context.fillStyle = "rgb(200, 20, 20)";
+    game.context.beginPath();
+    game.context.arc(screenX, screenY, this.radius, 0, Math.PI * 2, true);
+    game.context.closePath();
+    game.context.fill();
+  }
 };
