@@ -9,7 +9,7 @@ function SoundEngine() {
   this.sounds = {
     "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav",
     "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
-    "boom": "assets/JBM_Sfxr_pack_1/samples/explosions/small/explosion-1.wav"
+    "boom": "assets/sounds/explosions/6.wav"
   };
   this.soundBuffers = {};
   this.loadSounds();
