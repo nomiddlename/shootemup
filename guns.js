@@ -1,46 +1,45 @@
-function PewPewGun(speed, rate, damage, range) {
+function PewPewGun(speed, damage, range) {
   Base.call(this);
-  this.speed = speed;
-  this.rate = rate;
-  this.damage = damage;
-  this.range = range;
+  this.speed = speed; //speed of bullets
+  this.damage = damage; //damage of each bullet
+  this.range = range; //range/lifetime of bullets (in ticks)
 }
 PewPewGun.prototype = Object.create(Base.prototype);
 
-PewPewGun.prototype.fire = function(posX, posY, speedX, speedY) {
-  var magnitude = Math.sqrt(speedX*speedX + speedY*speedY)
-  , directionX = speedX / magnitude
-  , directionY = speedY / magnitude
-  , bullet = new Bullet(
-    posX, 
-    posY, 
-    directionX * this.speed, 
-    directionY * this.speed, 
+PewPewGun.prototype.fire = function(position, direction) {
+  var velocity = direction.Copy();
+
+  velocity.Normalize();
+  velocity.Multiply(this.speed);
+  
+  bullet = new Bullet(
+    position,
+    velocity, 
     this.damage, 
     this.range
   );
-  this.fireEvent("sounds", { name: "pew-pew", volume: 1.0 });
+  this.fireEvent("sounds", { name: "pew-pew", position: position });
 };
 
 PewPewGun.prototype.stopFiring = function() {
 };
 
-function Bullet(posX, posY, speedX, speedY, damage, range) {
+function Bullet(position, velocity, damage, range) {
   Base.call(this);
-  this.posX = posX;
-  this.posY = posY;
-  this.radius = 5;
-  this.startX = posX;
-  this.startY = posY;
-  this.speedX = speedX;
-  this.speedY = speedY;
+  this.velocity = velocity.Copy();
+  this.radius = 0.2;
   this.damage = damage;
   this.range = range;
   this.bullet = true;
 
-  this.on("tick", this.tick);
-  this.fireEvent("render.register", 1);
+  this.position = velocity.Copy();
+  this.position.Normalize();
+  this.position.Multiply(this.radius*2);
+  this.position.Add(position);
+
   this.fireEvent("physics.register");
+  this.fireEvent("render.register", 1);
+  this.on("tick", this.tick);
 };
 Bullet.prototype = Object.create(Base.prototype);
 
@@ -54,13 +53,21 @@ Bullet.prototype.tick = function(event) {
 };
 
 Bullet.prototype.draw = function(game) {
-  if (this.physBody) {
-    var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
-    , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
-    game.context.fillStyle = "rgb(200, 20, 20)";
-    game.context.beginPath();
-    game.context.arc(screenX, screenY, this.radius, 0, Math.PI * 2, true);
-    game.context.closePath();
-    game.context.fill();
-  }
+  var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
+  , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
+  
+  game.context.fillStyle = "rgb(200, 20, 20)";
+  game.context.beginPath();
+  game.context.arc(
+    screenX, 
+    screenY, 
+    game.physics.scaleToPixels(this.radius), 
+    0, 
+    Math.PI * 2, 
+    true
+  );
+  game.context.closePath();
+  game.context.fill();
+  game.context.strokeStyle = "pink";
+  game.context.stroke();
 };

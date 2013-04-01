@@ -11,19 +11,18 @@ function RandomLevel(width, height) {
   for (var y = 0; y < this.rows; y++) {
     var row = [];
     for (var x = 0; x < this.columns; x++) {
-      var xColour = (x * this.tileWidth) % 256;
-      var yColour = (y * this.tileHeight) % 256;
-      row.push("rgb("+xColour+", "+yColour+", "+xColour+")");  
+      var colour = (x * this.tileWidth) % 128 + (y * this.tileHeight) % 128;
+      row.push("rgb("+colour+", "+colour+", "+colour+")");  
     }
     this.tiles.push(row);
   }
 
   this.setupAlienHordes();
 
-  //register us for drawing at zIndex = 0 (right at the bottom)
-  this.fireEvent("render.register", 0);
   //let the game know how big we are
   this.fireEvent("boundary", { left: 0, right: this.width, bottom: 0, top: this.height });
+  //register us for drawing at zIndex = 0 (right at the bottom)
+  this.fireEvent("render.register", 0);
 }
 RandomLevel.prototype = Object.create(Base.prototype);
 
@@ -60,59 +59,62 @@ RandomLevel.prototype.setupAlienHordes = function() {
   for (i = 0; i < numberOfAliens; i++) {
     startX = Math.round((Math.random() * (this.width - 800)) + 100);
     startY = Math.round((Math.random() * (this.height - 600)) + 100);
-    new Alien(startX, startY, 15, 100);
+    new Alien(startX / 30, startY / 30, 5, 100);
   }
 };
 
 function Alien(posX, posY, speed, health) {
-  this.posX = posX;
-  this.posY = posY;
+  this.position = new Vec2(posX, posY);
   this.speed = speed;
-  this.speedX = (Math.random() - 0.5) * 2 * speed;
-  this.speedY = (Math.random() - 0.5) * 2 * speed;
-  this.radius = 25;
+  this.radius = 0.8;
   this.health = health;
-  this.playerX = 0;
-  this.playerY = 0;
 
   Base.call(this);
-  //this.on("tick", this.tick);
-  //this.on("player.move", this.updatePlayerPosition);
-  this.fireEvent("render.register", 1);
   this.fireEvent("physics.register");
+  this.fireEvent("render.register", 1);
+  this.on("tick", this.tick);
+  this.on("player.move", this.updatePlayerPosition);
 }
 Alien.prototype = Object.create(Base.prototype);
 
 Alien.prototype.draw = function(game) {
-  if (this.physBody) {
-    var screenX = game.physics.scaleToPixels(this.physBody.GetPosition().x)
-    , screenY = game.physics.scaleToPixels(this.physBody.GetPosition().y);
+  var screenX = game.physics.scaleToPixels(this.physBody.GetPosition().x)
+  , screenY = game.physics.scaleToPixels(this.physBody.GetPosition().y)
+  , radius = game.physics.scaleToPixels(this.radius);
   
-    if (game.isOnScreen(screenX, screenY, this.radius)) {
-      game.context.fillStyle = "rgb(200, 50, 100)";
-      game.context.beginPath();
-      game.context.arc(game.translateX(screenX), game.translateY(screenY), this.radius, 0, Math.PI*2, true);
-      game.context.closePath();
-      game.context.fill();
-    }
+  if (game.isOnScreen(screenX, screenY, radius)) {
+    game.context.fillStyle = "rgb(200, 50, 100)";
+    game.context.beginPath();
+    game.context.arc(
+      game.translateX(screenX), 
+      game.translateY(screenY), 
+      radius, 
+      0, 
+      Math.PI*2, 
+      true
+    );
+    game.context.closePath();
+    game.context.fill();
+    game.context.strokeStyle = "green";
+    game.context.stroke();
   }
 };
 
 Alien.prototype.tick = function(event) {
   //need to work out a normalised vector between our position and the
   //player's position, then multiply it by our speed
-  var dx = (this.playerX - this.posX)
-  , dy = (this.playerY - this.posY)
-  , magnitude = Math.sqrt(dx*dx + dy*dy);
+  if (this.playerBody) {
+    var direction = this.playerBody.GetPosition().Copy();
+    direction.Subtract(this.physBody.GetPosition());
+    direction.Normalize();
+    direction.Multiply(this.speed);
 
-  this.speedX = dx * this.speed / magnitude;
-  this.speedY = dy * this.speed / magnitude;
-
+    this.physBody.ApplyForce(direction, this.physBody.GetPosition());
+  }
 };
 
 Alien.prototype.updatePlayerPosition = function(event) {
-  this.playerX = event.source.posX;
-  this.playerY = event.source.posY;
+  this.playerBody = event.source.physBody;
 };
 
 //support for loading as node.js module, for testing

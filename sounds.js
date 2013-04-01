@@ -4,6 +4,7 @@ function SoundEngine() {
   this.context = new webkitAudioContext();
   this.gainNode = this.context.createGainNode();
   this.gainNode.connect(this.context.destination);
+  this.playerPosition = null;
 
   this.sounds = {
     "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav",
@@ -13,13 +14,16 @@ function SoundEngine() {
   this.loadSounds();
 
   this.on("sounds", this.playSound);
+  this.on("player.move", this.updatePlayerPosition);
 }
 SoundEngine.prototype = Object.create(Base.prototype);
 
 SoundEngine.prototype.playSound = function(event) {
   var soundName = event.data.name
-  , volume = event.data.volume
+  , position = event.data.position
+  , volume = this.volumeByDistance(position)
   , source;
+
   if (this.soundBuffers[soundName]) {
     source = this.context.createBufferSource();
     source.buffer = this.soundBuffers[soundName];
@@ -29,6 +33,26 @@ SoundEngine.prototype.playSound = function(event) {
   }
 };
 
+SoundEngine.prototype.updatePlayerPosition = function(event) {
+  if (event.source.physBody) {
+    this.playerPosition = event.source.physBody.GetPosition();
+  }
+};
+
+SoundEngine.prototype.volumeByDistance = function(soundPosition) {
+  var volume, distance, position = soundPosition.Copy();
+  position.Subtract(this.playerPosition);
+  distance = position.Length();
+  
+  if (distance > 30) {
+    volume = 0;
+  } else {
+    volume = 1 - (distance/30);
+  }
+
+  return volume;
+};
+  
 SoundEngine.prototype.loadSounds = function() {
   var bufferLoader = new BufferLoader(
     this.context,

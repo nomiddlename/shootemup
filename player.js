@@ -1,26 +1,28 @@
 function Player(definition) {
   Base.call(this);
-  this.speedX = definition.speedX;
-  this.speedY = definition.speedY;
-  this.posX = definition.posX;
-  this.posY = definition.posY;
+  this.position = new Vec2(definition.posX, definition.posY);
   this.radius = definition.radius;
   this.keys = definition.keys;
   this.health = definition.health;
+  
+  //not sure about these at the moment
+  this.speedX = 0;
+  this.speedY = 0;
 
-  this.gun = new PewPewGun(10, 500, 100, 100);
+  //we want to take part in the physics of the world
+  this.fireEvent("physics.register");
+  //we want to be rendered at zIndex 2
+  this.fireEvent("render.register", 2);
+  //we have to let the rest of the world know where we are,
+  //unfortunately.
+  setInterval(this.fireEvent.bind(this, "player.move"), 200);
+
+  this.gun = new PewPewGun(30, 500, 100, 100);
 
   this.on("keydown", this.startMoving);
   this.on("keyup", this.stopMoving);
   this.on("tick", this.update);
 
-  //we want to be rendered at zIndex 2
-  this.fireEvent("render.register", 2);
-  //we want to take part in the physics of the world
-  this.fireEvent("physics.register");
-  //we have to let the rest of the world know where we are,
-  //unfortunately.
-  //setInterval(this.fireEvent.bind(this, "player.move"), 200);
 }
 Player.prototype = Object.create(Base.prototype);
 
@@ -35,26 +37,41 @@ Player.prototype.update = function(event) {
 };
 
 Player.prototype.draw = function(game) {
-  var screenX, screenY;
+  var screenX, screenY, angle, radius;
 
   //posX and posY are in world coords
   //need to translate to canvas coordinates
-  if (this.physBody) {
-    this.posX = game.physics.scaleToPixels(this.physBody.GetPosition().x);
-    this.posY = game.physics.scaleToPixels(this.physBody.GetPosition().y);
-  }
-  screenX = game.translateX(this.posX);
-  screenY = game.translateY(this.posY);
+  screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x));
+  screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
+  angle = this.physBody.GetAngle();
+  radius = game.physics.scaleToPixels(this.radius);
+
   game.context.fillStyle = "rgb(20, 20, 200)";
   game.context.beginPath();
-  game.context.arc(screenX, screenY, this.radius, 0, Math.PI*2, true);
+  game.context.arc(screenX, screenY, radius, 0, Math.PI*2, true);
   game.context.closePath();
   game.context.fill();
+  game.context.strokeStyle = "black";
+  game.context.moveTo(screenX, screenY);
+  game.context.lineTo(
+    screenX + (radius * Math.sin(angle)), 
+    screenY + (radius * Math.cos(angle))
+  );
+  game.context.stroke();
+
 };
 
 Player.prototype.fireTheGun = function() {
-  var speedY = Math.abs(this.speedX) == 0 && Math.abs(this.speedY) == 0 ? 600 : this.speedY;
-  this.gun.fire(this.posX, this.posY, this.speedX, speedY);
+  var direction = new Vec2(
+    Math.sin(this.physBody.GetAngle()), 
+    Math.cos(this.physBody.GetAngle())
+  )
+  , gunDistance = direction.Copy()
+  , gunPosition = this.physBody.GetPosition().Copy();
+  gunDistance.Multiply(this.radius);
+  gunPosition.Add(gunDistance);
+
+  this.gun.fire(gunPosition, direction);
 };
 
 Player.prototype.startMoving = function(event) {

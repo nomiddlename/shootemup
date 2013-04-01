@@ -32,7 +32,6 @@ function PhysicsEngine() {
   this.on("boundary", this.updateBoundary);
   this.on("physics.register", this.addAThing);
   this.on("physics.deregister", this.removeAThing);
-//  this.on("tick", this.updateWorld);
 }
 PhysicsEngine.prototype = Object.create(Base.prototype);
 
@@ -112,24 +111,23 @@ PhysicsEngine.prototype.addAThing = function(event) {
   , fixtureDef = new FixtureDef();
 
   bodyDef.type = Body.b2_dynamicBody;
-  bodyDef.position = new Vec2(
-    this.scaleToWorld(event.source.posX),
-    this.scaleToWorld(event.source.posY)
-  );
+  bodyDef.position = event.source.position;
 
   if (event.source.bullet) {
     bodyDef.bullet = true;
   }
 
   fixtureDef.density = 1.0;
-  fixtureDef.friction = 0.2;
-  fixtureDef.restitution = 0.8;
-  fixtureDef.shape = new CircleShape(this.scaleToWorld(event.source.radius));
+  fixtureDef.friction = 0.5;
+  fixtureDef.restitution = 0.5;
+  fixtureDef.shape = new CircleShape(event.source.radius);
   
   event.source.physBody = this.world.CreateBody(bodyDef);
   event.source.physBody.CreateFixture(fixtureDef);
   event.source.physBody.SetUserData(event.source);
-  event.source.physBody.SetLinearVelocity(new Vec2(event.source.speedX, event.source.speedY));
+  if (event.source.velocity) {
+    event.source.physBody.SetLinearVelocity(event.source.velocity);
+  }
 };
 
 PhysicsEngine.prototype.removeAThing = function(event) {
@@ -160,7 +158,10 @@ PhysicsEngine.prototype.postSolve = function(contact, impulses) {
   if (bodyA.GetUserData && bodyB.GetUserData) {
     if (bodyA.GetUserData() && bodyB.GetUserData()) {
       //console.log("Bump! A = ", bodyA, "; B = ", bodyB);
-      this.fireEvent("sounds", { name: "bounce", volume: 0.8 });
+      console.log("impulse is ", impulses.normalImpulses[0]);
+      if (impulses.normalImpulses[0] > 0.2) {
+        this.fireEvent("sounds", { name: "bounce", position: bodyA.GetPosition() });
+      }
     }
   }
 //  bodyA.GetUserData().hitBy(bodyB.GetUserData(), impulses[0]);

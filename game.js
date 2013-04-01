@@ -36,11 +36,9 @@
     this.sounds = new SoundEngine();
     this.player = new Player(
       {
-        speedX: 0, //in game pixels per second
-        speedY: 0, //in game pixels per second
-        posX: this.windowX + (this.width / 2),    //in game coords
-        posY: this.windowY + (this.height / 2),    //in game coords
-        radius: 25,
+        posX: this.physics.scaleToWorld(this.windowX + (this.width / 2)),    //in game coords
+        posY: this.physics.scaleToWorld(this.windowY + (this.height / 2)),    //in game coords
+        radius: 0.8,
         health: 100,
         keys: {
           left: 'a',
@@ -105,8 +103,10 @@
     //we want to move the window when the player gets within 100px of
     //the edges of the screen
     //but let's start with centring the player on the screen
-    this.windowX = this.player.posX - (this.width / 2);
-    this.windowY = this.player.posY - (this.height / 2);
+    var posX = this.physics.scaleToPixels(this.player.physBody.GetPosition().x)
+    , posY = this.physics.scaleToPixels(this.player.physBody.GetPosition().y);
+    this.windowX = posX - (this.width / 2);
+    this.windowY = posY - (this.height / 2);
   };
 
   Game.prototype.isOnScreen = function(posX, posY, radius) {
