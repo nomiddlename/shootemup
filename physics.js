@@ -158,12 +158,13 @@ PhysicsEngine.prototype.postSolve = function(contact, impulses) {
   if (bodyA.GetUserData && bodyB.GetUserData) {
     if (bodyA.GetUserData() && bodyB.GetUserData()) {
       //console.log("Bump! A = ", bodyA, "; B = ", bodyB);
-      console.log("impulse is ", impulses.normalImpulses[0]);
-      if (impulses.normalImpulses[0] > 0.2) {
-        this.fireEvent("sounds", { name: "bounce", position: bodyA.GetPosition() });
-      }
+      //console.log("impulse is ", impulses.normalImpulses[0]);
+      //if (impulses.normalImpulses[0] > 0.2) {
+        //this.fireEvent("sounds", { name: "bounce", position: bodyA.GetPosition() });
+      //}
+      bodyA.GetUserData().hit(bodyB.GetUserData(), impulses[0]);
+      bodyB.GetUserData().hit(bodyA.GetUserData(), impulses[0]);
+      
     }
   }
-//  bodyA.GetUserData().hitBy(bodyB.GetUserData(), impulses[0]);
-//  bodyB.GetUserData().hitBy(bodyA.GetUserData(), impulses[0]);
 };

@@ -46,9 +46,7 @@ Bullet.prototype = Object.create(Base.prototype);
 Bullet.prototype.tick = function(event) {
   this.range -= 1;
   if (this.range <= 0) {
-    this.fireEvent("render.deregister", 1);
-    this.fireEvent("physics.deregister");
-    this.stopListening("tick");
+    this.die();
   }
 };
 
@@ -71,3 +69,16 @@ Bullet.prototype.draw = function(game) {
   game.context.strokeStyle = "pink";
   game.context.stroke();
 };
+
+Bullet.prototype.hit = function(other, impulse) {
+  if (other instanceof Alien) {
+    other.health -= this.damage;
+    this.die();
+  }
+};
+
+Bullet.prototype.die = function() {
+  this.fireEvent("render.deregister", 1);
+  this.fireEvent("physics.deregister");
+  this.stopListening("tick");
+}; 

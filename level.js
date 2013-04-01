@@ -59,7 +59,7 @@ RandomLevel.prototype.setupAlienHordes = function() {
   for (i = 0; i < numberOfAliens; i++) {
     startX = Math.round((Math.random() * (this.width - 800)) + 100);
     startY = Math.round((Math.random() * (this.height - 600)) + 100);
-    new Alien(startX / 30, startY / 30, 5, 100);
+    new Alien(startX / 30, startY / 30, 5, 50);
   }
 };
 
@@ -101,20 +101,38 @@ Alien.prototype.draw = function(game) {
 };
 
 Alien.prototype.tick = function(event) {
-  //need to work out a normalised vector between our position and the
-  //player's position, then multiply it by our speed
-  if (this.playerBody) {
-    var direction = this.playerBody.GetPosition().Copy();
-    direction.Subtract(this.physBody.GetPosition());
-    direction.Normalize();
-    direction.Multiply(this.speed);
+  if (this.health <= 0) {
+    this.die();
+  } else {
+    //need to work out a normalised vector between our position and the
+    //player's position, then multiply it by our speed
+    if (this.playerBody) {
+      var direction = this.playerBody.GetPosition().Copy();
+      direction.Subtract(this.physBody.GetPosition());
+      direction.Normalize();
+      direction.Multiply(this.speed);
 
-    this.physBody.ApplyForce(direction, this.physBody.GetPosition());
+      this.physBody.ApplyForce(direction, this.physBody.GetPosition());
+    }
   }
 };
 
 Alien.prototype.updatePlayerPosition = function(event) {
   this.playerBody = event.source.physBody;
+};
+
+Alien.prototype.hit = function(other, impulse) {
+  if (other instanceof Player) {
+    other.health -= this.health;
+  }
+};
+
+Alien.prototype.die = function() {
+  this.fireEvent("render.deregister", 1);
+  this.fireEvent("physics.deregister");
+  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
+  this.stopListening("tick");
+  this.stopListening("player.move");
 };
 
 //support for loading as node.js module, for testing

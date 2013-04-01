@@ -39,7 +39,7 @@
         posX: this.physics.scaleToWorld(this.windowX + (this.width / 2)),    //in game coords
         posY: this.physics.scaleToWorld(this.windowY + (this.height / 2)),    //in game coords
         radius: 0.8,
-        health: 100,
+        health: 200,
         keys: {
           left: 'a',
           right: 'd',

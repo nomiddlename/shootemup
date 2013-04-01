@@ -28,7 +28,9 @@ Player.prototype = Object.create(Base.prototype);
 
 Player.prototype.update = function(event) {
   var tockMs = event.data;
-  if (this.physBody) {
+  if (this.health <= 0) {
+    this.die();
+  } else {
     if (Math.abs(this.speedX) > 0 || Math.abs(this.speedY) > 0) {
       this.physBody.ApplyForce(new Vec2(this.speedX, this.speedY), this.physBody.GetPosition());
     }
@@ -93,5 +95,22 @@ Player.prototype.stopMoving = function(event) {
   case this.keys.down: this.speedY = 0; break;
   case this.keys.fire: this.gun.stopFiring(); break;
   }
+};
+
+Player.prototype.hit = function(other, impulse) {
+  if (other.health) {
+    other.health -= this.health;
+  }
+};
+
+Player.prototype.die = function() {
+  console.log("He's dead, Jim.");
+  this.fireEvent("render.deregister", 2);
+  this.fireEvent("physics.deregister");
+  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
+  this.fireEvent("game.over");
+  this.stopListening("tick");
+  this.stopListening("keydown");
+  this.stopListening("keyup");
 };
 
