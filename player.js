@@ -4,6 +4,7 @@ function Player(definition) {
   this.radius = definition.radius;
   this.keys = definition.keys;
   this.health = definition.health;
+  this.damage = definition.damage;
   
   //not sure about these at the moment
   this.speedX = 0;
@@ -16,6 +17,8 @@ function Player(definition) {
   //we have to let the rest of the world know where we are,
   //unfortunately.
   setInterval(this.fireEvent.bind(this, "player.move"), 200);
+
+  this.fireEvent("player.health", this.health);
 
   this.gun = new PewPewGun(30, 500, 100, 100);
 
@@ -99,16 +102,21 @@ Player.prototype.stopMoving = function(event) {
 
 Player.prototype.hit = function(other, impulse) {
   if (other.health) {
-    other.health -= this.health;
+    other.health -= this.damage;
   }
 };
 
+Player.prototype.reduceHealth = function(amount) {
+  this.health -= amount;
+  this.health = Math.max(0, this.health);
+  this.fireEvent("player.health", this.health);
+};
+
 Player.prototype.die = function() {
-  console.log("He's dead, Jim.");
+  this.fireEvent("player.death");
+  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
   this.fireEvent("render.deregister", 2);
   this.fireEvent("physics.deregister");
-  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
-  this.fireEvent("game.over");
   this.stopListening("tick");
   this.stopListening("keydown");
   this.stopListening("keyup");

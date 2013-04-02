@@ -6,6 +6,8 @@ function RandomLevel(width, height) {
   this.tileHeight = 100;
   this.columns = this.width / this.tileWidth; 
   this.rows = this.height / this.tileHeight;
+  this.maxAliens = 100;
+  this.aliens = [];
   this.tiles = [];
   
   for (var y = 0; y < this.rows; y++) {
@@ -17,12 +19,13 @@ function RandomLevel(width, height) {
     this.tiles.push(row);
   }
 
-  this.setupAlienHordes();
-
   //let the game know how big we are
   this.fireEvent("boundary", { left: 0, right: this.width, bottom: 0, top: this.height });
   //register us for drawing at zIndex = 0 (right at the bottom)
   this.fireEvent("render.register", 0);
+
+  this.on("game.start", this.setupAlienHordes);
+  this.on("enemy.death", this.spawnMoreAliens);
 }
 RandomLevel.prototype = Object.create(Base.prototype);
 
@@ -50,24 +53,52 @@ RandomLevel.prototype.draw = function(game) {
 
 };
 
+RandomLevel.prototype.getRidOfExistingAliens = function() {
+  this.aliens.forEach(function(alien) {
+    alien.destroy();
+  });
+  this.aliens = [];
+};
+
 RandomLevel.prototype.setupAlienHordes = function() {
   var i
-  , startY
   , numberOfAliens = 30;
+
+  this.getRidOfExistingAliens();
 
   //spread the aliens out evenly over the level.
   for (i = 0; i < numberOfAliens; i++) {
-    startX = Math.round((Math.random() * (this.width - 800)) + 100);
-    startY = Math.round((Math.random() * (this.height - 600)) + 100);
-    new Alien(startX / 30, startY / 30, 5, 50);
+    this.spawnAlien();
   }
 };
 
-function Alien(posX, posY, speed, health) {
+RandomLevel.prototype.spawnMoreAliens = function(event) {
+  var deadAlien = event.source;
+  //remove the dead alien from the list
+  this.aliens = this.aliens.filter(function(alien) { return alien !== deadAlien; });
+  //for each alien that dies, spawn two more.
+  this.spawnAlien();
+  this.spawnAlien();
+};
+
+RandomLevel.prototype.spawnAlien = function() {
+  var startX, startY;
+
+  console.log("spawning alien, no. of aliens = ", this.aliens.length);
+
+  if (this.aliens.length < this.maxAliens) {
+    startX = Math.round((Math.random() * (this.width - 800)) + 100);
+    startY = Math.round((Math.random() * (this.height - 600)) + 100);
+    this.aliens.push(new Alien(startX / 30, startY / 30, 5, 50, 50));
+  }
+};
+
+function Alien(posX, posY, speed, health, damage) {
   this.position = new Vec2(posX, posY);
   this.speed = speed;
   this.radius = 0.8;
   this.health = health;
+  this.damage = damage;
 
   Base.call(this);
   this.fireEvent("physics.register");
@@ -122,15 +153,20 @@ Alien.prototype.updatePlayerPosition = function(event) {
 };
 
 Alien.prototype.hit = function(other, impulse) {
-  if (other instanceof Player) {
-    other.health -= this.health;
+  if (other.reduceHealth) {
+    other.reduceHealth(this.damage);
   }
 };
 
 Alien.prototype.die = function() {
+  this.fireEvent("enemy.death");
+  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
+  this.destroy();
+};
+
+Alien.prototype.destroy = function() {
   this.fireEvent("render.deregister", 1);
   this.fireEvent("physics.deregister");
-  this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
   this.stopListening("tick");
   this.stopListening("player.move");
 };

@@ -34,12 +34,23 @@
 
     this.physics = new PhysicsEngine();
     this.sounds = new SoundEngine();
+    this.level = new RandomLevel(5000, 5000);
+    this.display = new Display(this.width, this.height);
+
+    this.on("game.start", this.createPlayer);
+  }
+  Game.prototype = Object.create(Base.prototype);
+
+  Game.prototype.createPlayer = function(event) {
+    this.windowX = 2100;
+    this.windowY = 2200;
     this.player = new Player(
       {
         posX: this.physics.scaleToWorld(this.windowX + (this.width / 2)),    //in game coords
         posY: this.physics.scaleToWorld(this.windowY + (this.height / 2)),    //in game coords
         radius: 0.8,
         health: 200,
+        damage: 200,
         keys: {
           left: 'a',
           right: 'd',
@@ -49,10 +60,7 @@
         }
       }
     );
-    this.level = new RandomLevel(5000, 5000);
-
-  }
-  Game.prototype = Object.create(Base.prototype);
+  };
 
   Game.prototype.setCanvas = function(canvas) {
     this.context = canvas.getContext('2d');
@@ -103,10 +111,12 @@
     //we want to move the window when the player gets within 100px of
     //the edges of the screen
     //but let's start with centring the player on the screen
-    var posX = this.physics.scaleToPixels(this.player.physBody.GetPosition().x)
-    , posY = this.physics.scaleToPixels(this.player.physBody.GetPosition().y);
-    this.windowX = posX - (this.width / 2);
-    this.windowY = posY - (this.height / 2);
+    if (this.player) {
+      var posX = this.physics.scaleToPixels(this.player.physBody.GetPosition().x)
+      , posY = this.physics.scaleToPixels(this.player.physBody.GetPosition().y);
+      this.windowX = posX - (this.width / 2);
+      this.windowY = posY - (this.height / 2);
+    }
   };
 
   Game.prototype.isOnScreen = function(posX, posY, radius) {

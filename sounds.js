@@ -41,14 +41,19 @@ SoundEngine.prototype.updatePlayerPosition = function(event) {
 };
 
 SoundEngine.prototype.volumeByDistance = function(soundPosition) {
-  var volume, distance, position = soundPosition.Copy();
-  position.Subtract(this.playerPosition);
-  distance = position.Length();
+  var volume = 0
+  , distance
+  , position = soundPosition.Copy();
   
-  if (distance > 30) {
-    volume = 0;
-  } else {
-    volume = 1 - (distance/30);
+  if (this.playerPosition) {
+    position.Subtract(this.playerPosition);
+    distance = position.Length();
+  
+    if (distance > 30) {
+      volume = 0;
+    } else {
+      volume = 1 - (distance/30);
+    }
   }
 
   return volume;

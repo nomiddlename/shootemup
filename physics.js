@@ -20,7 +20,7 @@ function PhysicsEngine() {
     true
   );
 
-  this.boundaryBodies = this.setupBoundaries();
+  this.boundaryBodies = [];
 
   var contactListener = new ContactListener();
   contactListener.BeginContact = this.beginContact.bind(this);
