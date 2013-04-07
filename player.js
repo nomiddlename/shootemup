@@ -6,9 +6,9 @@ function Player(definition) {
   this.health = definition.health;
   this.damage = definition.damage;
   
-  //not sure about these at the moment
-  this.speedX = 0;
-  this.speedY = 0;
+  this.thrustLeft = false;
+  this.thrustRight = false;
+  this.thrustForward = false;
 
   //we want to take part in the physics of the world
   this.fireEvent("physics.register");
@@ -34,8 +34,15 @@ Player.prototype.update = function(event) {
   if (this.health <= 0) {
     this.die();
   } else {
-    if (Math.abs(this.speedX) > 0 || Math.abs(this.speedY) > 0) {
-      this.physBody.ApplyForce(new Vec2(this.speedX, this.speedY), this.physBody.GetPosition());
+    this.physBody.SetAngularDamping(1.0);
+    if (this.thrustLeft) {
+      this.rightThruster();
+    }
+    if (this.thrustRight) {
+      this.leftThruster();
+    }
+    if (this.thrustForward) {
+      this.forwardThruster();
     }
   }
 
@@ -81,27 +88,73 @@ Player.prototype.fireTheGun = function() {
 
 Player.prototype.startMoving = function(event) {
   switch(event.data) {
-  case this.keys.left: this.speedX = -10; break;
-  case this.keys.right: this.speedX = 10; break;
-  case this.keys.up: this.speedY = -10; break;
-  case this.keys.down: this.speedY = 10; break;
+  case this.keys.left: this.thrustLeft = true; break;
+  case this.keys.right: this.thrustRight = true; break;
+  case this.keys.up: this.thrustForward = true; break;
+  //case this.keys.down: this.rearThrust = true; break;
   case this.keys.fire: this.fireTheGun(); break;
   }
 };
 
+Player.prototype.leftThruster = function() {
+  var angle = this.physBody.GetAngle()
+  , force = new Vec2(Math.sin(angle), Math.cos(angle)) 
+  , thrusterPosition = this.physBody.GetPosition().Copy()
+  , thrusterOffset = new Vec2(
+      -Math.cos(angle), 
+    Math.sin(angle)
+  );
+  thrusterOffset.Multiply(this.radius);
+  thrusterPosition.Add(thrusterOffset);
+
+  force.Multiply(5);
+  this.physBody.ApplyForce(force, thrusterPosition);
+
+};
+
+Player.prototype.rightThruster = function() {
+  var angle = this.physBody.GetAngle()
+  , force = new Vec2(Math.sin(angle), Math.cos(angle)) 
+  , thrusterPosition = this.physBody.GetPosition().Copy()
+  , thrusterOffset = new Vec2(
+    -Math.cos(angle), 
+    Math.sin(angle)
+  );
+  thrusterOffset.Multiply(this.radius);
+  thrusterPosition.Subtract(thrusterOffset);
+
+  force.Multiply(5);
+  this.physBody.ApplyForce(force, thrusterPosition);
+
+};
+
+Player.prototype.forwardThruster = function() {
+  var angle = this.physBody.GetAngle()
+  , force = new Vec2(Math.sin(angle), Math.cos(angle)) 
+  , thrusterPosition = this.physBody.GetPosition().Copy();
+
+  force.Multiply(10);
+  this.physBody.ApplyForce(force, thrusterPosition);
+};
+
+Player.prototype.rearThruster = function() {
+  //do nothing for now
+};
+  
 
 Player.prototype.stopMoving = function(event) {
   switch(event.data) {
-  case this.keys.left: this.speedX = 0; break;
-  case this.keys.right: this.speedX = 0; break;
-  case this.keys.up: this.speedY = 0; break;
-  case this.keys.down: this.speedY = 0; break;
+  case this.keys.left: this.thrustLeft = false; break;
+  case this.keys.right: this.thrustRight = false; break;
+  case this.keys.up: this.thrustForward = false; break;
+  //case this.keys.down: this.speedY = 0; break;
   case this.keys.fire: this.gun.stopFiring(); break;
   }
 };
 
 Player.prototype.hit = function(other, impulse) {
   if (other.health) {
+    console.log("Player hit ", other);
     other.health -= this.damage;
   }
 };

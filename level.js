@@ -153,12 +153,15 @@ Alien.prototype.updatePlayerPosition = function(event) {
 };
 
 Alien.prototype.hit = function(other, impulse) {
+//  console.log("Alien hit by ", other);
   if (other.reduceHealth) {
+    console.log("Reducing health of ", other);
     other.reduceHealth(this.damage);
   }
 };
 
 Alien.prototype.die = function() {
+  new Explosion(this.physBody.GetPosition());
   this.fireEvent("enemy.death");
   this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
   this.destroy();

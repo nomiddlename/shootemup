@@ -72,6 +72,7 @@ Bullet.prototype.draw = function(game) {
 
 Bullet.prototype.hit = function(other, impulse) {
   if (other instanceof Alien) {
+    console.log("Bullet is hitting Alien: ", other);
     other.health -= this.damage;
     this.die();
   }

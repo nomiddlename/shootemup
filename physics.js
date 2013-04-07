@@ -131,6 +131,7 @@ PhysicsEngine.prototype.addAThing = function(event) {
 };
 
 PhysicsEngine.prototype.removeAThing = function(event) {
+  console.log("Removing ", event.source, " from world");
   this.world.DestroyBody(event.source.physBody);
 };
 

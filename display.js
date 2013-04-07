@@ -67,7 +67,7 @@ Display.prototype.gameStart = function(event) {
   this.stopListening("keydown");
   this.on("player.health", this.updatePlayerHealth);
   this.on("enemy.death", this.updateScore);
-  this.on("player.death", this.gameOver);
+  this.on("player.death", this.gameOver);    
   this.gameIsOver = false;
   this.gameHasStarted = true;
   this.fireEvent("game.start");

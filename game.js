@@ -34,12 +34,39 @@
 
     this.physics = new PhysicsEngine();
     this.sounds = new SoundEngine();
-    this.level = new RandomLevel(5000, 5000);
-    this.display = new Display(this.width, this.height);
 
+    this.loadAssets(this.assetsLoaded.bind(this));
+                    
     this.on("game.start", this.createPlayer);
   }
   Game.prototype = Object.create(Base.prototype);
+
+  Game.prototype.loadAssets = function(cb) {
+    var self = this
+    , numberLoaded = 0
+    , assetsToLoad = [
+      { name: 'boom', file: 'assets/boom3_0.png' }
+    ];
+    this.assets = {};
+    
+    assetsToLoad.forEach(function(asset) {
+      var image = new Image();
+      image.onload = function() {
+        self.assets[asset.name] = image;
+        numberLoaded += 1;
+        if (numberLoaded >= assetsToLoad.length) {
+          cb();
+        }
+      };
+      image.src = asset.file;
+    });
+
+  };
+
+  Game.prototype.assetsLoaded = function() {
+    this.level = new RandomLevel(5000, 5000);
+    this.display = new Display(this.width, this.height);
+  };
 
   Game.prototype.createPlayer = function(event) {
     this.windowX = 2100;
