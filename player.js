@@ -16,7 +16,7 @@ function Player(definition) {
   this.fireEvent("render.register", 2);
   //we have to let the rest of the world know where we are,
   //unfortunately.
-  setInterval(this.fireEvent.bind(this, "player.move"), 50);
+  this.intervalId = setInterval(this.fireEvent.bind(this, "player.move"), 50);
 
   this.fireEvent("player.health", this.health);
 
@@ -87,7 +87,7 @@ Player.prototype.fireTheGun = function() {
 };
 
 Player.prototype.startMoving = function(event) {
-  switch(event.data) {
+  switch(event.data.code) {
   case this.keys.left: this.thrustLeft = true; break;
   case this.keys.right: this.thrustRight = true; break;
   case this.keys.up: this.thrustForward = true; break;
@@ -143,7 +143,7 @@ Player.prototype.rearThruster = function() {
   
 
 Player.prototype.stopMoving = function(event) {
-  switch(event.data) {
+  switch(event.data.code) {
   case this.keys.left: this.thrustLeft = false; break;
   case this.keys.right: this.thrustRight = false; break;
   case this.keys.up: this.thrustForward = false; break;
@@ -172,5 +172,6 @@ Player.prototype.die = function() {
   this.stopListening("tick");
   this.stopListening("keydown");
   this.stopListening("keyup");
+  clearInterval(this.intervalId);
 };
 

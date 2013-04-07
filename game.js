@@ -9,6 +9,7 @@
 
     document.addEventListener("keydown", game.handleKeys.bind(game));
     document.addEventListener("keyup", game.handleKeys.bind(game));
+    document.addEventListener("webkitfullscreenchange", game.resize.bind(game));
     
     (function mainLoop() {
       var now = Date.now(), delta = now - lastTime;
@@ -79,17 +80,18 @@
         health: 200,
         damage: 200,
         keys: {
-          left: 'a',
-          right: 'd',
-          up: 'w',
-          down: 's',
-          fire: ' '
+          left: 37,
+          right: 39,
+          up: 38,
+          down: 40,
+          fire: 32
         }
       }
     );
   };
 
   Game.prototype.setCanvas = function(canvas) {
+    this.canvas = canvas;
     this.context = canvas.getContext('2d');
     this.width = canvas.width;
     this.height = canvas.height;
@@ -153,9 +155,37 @@
       && (posY - radius < this.windowY + this.height);
   };
 
+  Game.prototype.toggleFullScreen = function() {
+    if (document.webkitIsFullScreen) {
+      document.webkitCancelFullScreen();
+    } else {
+      this.canvas.webkitRequestFullScreen();
+    }
+  };
+
+  Game.prototype.resize = function() {
+    var rect;
+    console.log("in resize, with document.webkitIsFullScreen = ", document.webkitIsFullScreen);
+    if (document.webkitIsFullScreen) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+    } else {
+      this.canvas.width = 800;
+      this.canvas.height = 600;
+      this.width = 800;
+      this.height = 600;
+    }
+  };
+
   Game.prototype.handleKeys = function(event) {
     var key = String.fromCharCode(event.keyCode).toLowerCase();
-    this.fireEvent(event.type, key);
+    if (key === 'f') {
+      this.toggleFullScreen();
+    } else {
+      this.fireEvent(event.type, { key: key, code: event.keyCode });
+    }
     //space bar makes the page scroll
     if (key === ' ') {
       event.preventDefault();
