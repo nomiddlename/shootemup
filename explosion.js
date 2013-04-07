@@ -10,8 +10,8 @@ Explosion.prototype = Object.create(Base.prototype);
 
 Explosion.prototype.draw = function(game) {
   var frames = game.assets['boom']
-  , frameX = (this.currentFrame % 8) * 128
-  , frameY = (Math.round(this.currentFrame / 8) * 128)
+  , frameX = Math.round(Math.random() * 8) * 128
+  , frameY = Math.round(this.currentFrame) * 128
   , screenX = game.translateX(game.physics.scaleToPixels(this.position.x)) - 64
   , screenY = game.translateY(game.physics.scaleToPixels(this.position.y)) - 64;
 
@@ -19,8 +19,8 @@ Explosion.prototype.draw = function(game) {
 };
 
 Explosion.prototype.update = function(tock) {
-  this.currentFrame += 4;
-  if (this.currentFrame > 63) {
+  this.currentFrame += 0.5;
+  if (this.currentFrame > 8) {
     this.stopListening('tick');
     this.fireEvent('render.deregister', 3);
   }
