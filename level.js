@@ -89,7 +89,7 @@ RandomLevel.prototype.spawnAlien = function() {
   if (this.aliens.length < this.maxAliens) {
     startX = Math.round((Math.random() * (this.width - 800)) + 100);
     startY = Math.round((Math.random() * (this.height - 600)) + 100);
-    this.aliens.push(new Alien(startX / 30, startY / 30, 5, 50, 50));
+    this.aliens.push(new Alien(startX / 30, startY / 30, 8, 50, 50));
   }
 };
 
