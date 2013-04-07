@@ -21,6 +21,7 @@ function PhysicsEngine() {
   );
 
   this.boundaryBodies = [];
+  this.deadThings = [];
 
   var contactListener = new ContactListener();
   contactListener.BeginContact = this.beginContact.bind(this);
@@ -132,13 +133,20 @@ PhysicsEngine.prototype.addAThing = function(event) {
 
 PhysicsEngine.prototype.removeAThing = function(event) {
   console.log("Removing ", event.source, " from world");
-  this.world.DestroyBody(event.source.physBody);
+  this.deadThings.push(event.source.physBody);
 };
 
 PhysicsEngine.prototype.updateWorld = function(event) {
+  var self = this;
   //console.log("Updating world");
   this.world.Step( 1/60, 10, 10);
   this.world.ClearForces();
+  
+  this.deadThings.forEach(function(thing) {
+    self.world.DestroyBody(thing);
+  });
+  this.deadThings = [];
+
 };
 
 PhysicsEngine.prototype.beginContact = function() { 
