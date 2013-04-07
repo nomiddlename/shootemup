@@ -154,7 +154,6 @@ Player.prototype.stopMoving = function(event) {
 
 Player.prototype.hit = function(other, impulse) {
   if (other.health) {
-    console.log("Player hit ", other);
     other.health -= this.damage;
   }
 };

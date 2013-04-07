@@ -84,8 +84,6 @@ RandomLevel.prototype.spawnMoreAliens = function(event) {
 RandomLevel.prototype.spawnAlien = function() {
   var startX, startY;
 
-  console.log("spawning alien, no. of aliens = ", this.aliens.length);
-
   if (this.aliens.length < this.maxAliens) {
     startX = Math.round((Math.random() * (this.width - 800)) + 100);
     startY = Math.round((Math.random() * (this.height - 600)) + 100);
@@ -153,9 +151,7 @@ Alien.prototype.updatePlayerPosition = function(event) {
 };
 
 Alien.prototype.hit = function(other, impulse) {
-//  console.log("Alien hit by ", other);
   if (other.reduceHealth) {
-    console.log("Reducing health of ", other);
     other.reduceHealth(this.damage);
   }
 };
