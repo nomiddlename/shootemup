@@ -16,7 +16,7 @@ function Player(definition) {
   this.fireEvent("render.register", 2);
   //we have to let the rest of the world know where we are,
   //unfortunately.
-  setInterval(this.fireEvent.bind(this, "player.move"), 200);
+  setInterval(this.fireEvent.bind(this, "player.move"), 50);
 
   this.fireEvent("player.health", this.health);
 
