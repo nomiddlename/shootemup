@@ -156,6 +156,10 @@
   Game.prototype.handleKeys = function(event) {
     var key = String.fromCharCode(event.keyCode).toLowerCase();
     this.fireEvent(event.type, key);
+    //space bar makes the page scroll
+    if (key === ' ') {
+      event.preventDefault();
+    }
   };
 
 })(window, document);
