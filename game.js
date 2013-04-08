@@ -80,11 +80,11 @@
         health: 200,
         damage: 200,
         keys: {
-          left: 37,
-          right: 39,
-          up: 38,
-          down: 40,
-          fire: 32
+          left: 'a', // left arrow = 37,
+          right: 'd', // right arrow = 39,
+          up: 'w', // up arrow = 38,
+          down: 's', // down arrow = 40,
+          fire: ' ' // space = 32
         }
       }
     );
@@ -159,7 +159,7 @@
     if (document.webkitIsFullScreen) {
       document.webkitCancelFullScreen();
     } else {
-      this.canvas.webkitRequestFullScreen();
+      this.canvas.webkitRequestFullScreen(true);
     }
   };
 
