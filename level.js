@@ -112,8 +112,9 @@ Alien.prototype.draw = function(game) {
   , radius = game.physics.scaleToPixels(this.radius);
   
   if (game.isOnScreen(screenX, screenY, radius)) {
-    game.context.fillStyle = "rgb(200, 50, 100)";
+    
     game.context.beginPath();
+    game.context.fillStyle = "rgb(200, 50, 100)";
     game.context.arc(
       game.translateX(screenX), 
       game.translateY(screenY), 
@@ -122,10 +123,11 @@ Alien.prototype.draw = function(game) {
       Math.PI*2, 
       true
     );
-    game.context.closePath();
     game.context.fill();
     game.context.strokeStyle = "green";
+    game.context.lineWidth = 1;
     game.context.stroke();
+    game.context.closePath();
   }
 };
 

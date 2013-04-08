@@ -49,7 +49,7 @@ Player.prototype.update = function(event) {
 };
 
 Player.prototype.draw = function(game) {
-  var screenX, screenY, angle, radius;
+  var screenX, screenY, angle, radius, thrusterX, thrusterY;
 
   //posX and posY are in world coords
   //need to translate to canvas coordinates
@@ -58,19 +58,45 @@ Player.prototype.draw = function(game) {
   angle = this.physBody.GetAngle();
   radius = game.physics.scaleToPixels(this.radius);
 
-  game.context.fillStyle = "rgb(20, 20, 200)";
   game.context.beginPath();
   game.context.arc(screenX, screenY, radius, 0, Math.PI*2, true);
-  game.context.closePath();
+  game.context.fillStyle = "rgb(20, 20, 200)";
   game.context.fill();
+  game.context.closePath();
+  game.context.beginPath();
   game.context.strokeStyle = "black";
+  game.context.lineWidth = 1;
   game.context.moveTo(screenX, screenY);
   game.context.lineTo(
     screenX + (radius * Math.sin(angle)), 
     screenY + (radius * Math.cos(angle))
   );
   game.context.stroke();
+  game.context.closePath();
 
+  if (this.thrustLeft) {
+    this.drawThruster(game.context, screenX - (Math.cos(angle)*radius), screenY + (Math.sin(angle)*radius), 5, angle);
+  }
+  if (this.thrustRight) {
+    this.drawThruster(game.context, screenX + (Math.cos(angle)*radius), screenY - (Math.sin(angle)*radius), 5, angle);
+  }
+  if (this.thrustForward) {
+    this.drawThruster(game.context, screenX - (Math.sin(angle)*radius), screenY - (Math.cos(angle)*radius), 10, angle);
+  } 
+};
+
+Player.prototype.drawThruster = function(context, x, y, length, angle) {
+  context.beginPath();
+  context.strokeStyle = "orange";
+  context.moveTo(x, y);
+  context.lineTo(
+    x - (length * Math.sin(angle)),
+    y - (length * Math.cos(angle))
+  );
+  context.lineWidth = 5;
+  context.lineCap = 'round';
+  context.stroke();
+  context.closePath();
 };
 
 Player.prototype.fireTheGun = function() {
@@ -87,7 +113,7 @@ Player.prototype.fireTheGun = function() {
 };
 
 Player.prototype.startMoving = function(event) {
-  switch(event.data.code) {
+  switch(event.data.key) {
   case this.keys.left: this.thrustLeft = true; break;
   case this.keys.right: this.thrustRight = true; break;
   case this.keys.up: this.thrustForward = true; break;
@@ -143,7 +169,7 @@ Player.prototype.rearThruster = function() {
   
 
 Player.prototype.stopMoving = function(event) {
-  switch(event.data.code) {
+  switch(event.data.key) {
   case this.keys.left: this.thrustLeft = false; break;
   case this.keys.right: this.thrustRight = false; break;
   case this.keys.up: this.thrustForward = false; break;
