@@ -101,9 +101,10 @@ RandomLevel.prototype.spawnAlien = function() {
 function Alien(posX, posY, speed, health, damage) {
   this.position = new Vec2(posX, posY);
   this.speed = speed;
-  this.radius = 0.8;
+  this.radius = 1.2;
   this.health = health;
   this.damage = damage;
+  this.frame = Math.floor(Math.random() * 8);
 
   Base.call(this);
   this.fireEvent("physics.register");
@@ -128,7 +129,7 @@ Alien.prototype.draw = function(game) {
     game.context.save();
     game.context.translate(game.translateX(screenX), game.translateY(screenY));
     game.context.rotate(angle);
-    game.context.drawImage(image, 0, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
+    game.context.drawImage(image, Math.floor(this.frame) * 64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
     game.context.restore();
   }
 };
@@ -137,6 +138,10 @@ Alien.prototype.tick = function(event) {
   if (this.health <= 0) {
     this.die();
   } else {
+    this.frame += .1;
+    if (this.frame > 7) {
+      this.frame = 0;
+    }
     //need to work out a normalised vector between our position and the
     //player's position, then multiply it by our speed
     if (this.playerBody) {
