@@ -46,7 +46,8 @@
     var self = this
     , numberLoaded = 0
     , assetsToLoad = [
-      { name: 'boom', file: 'assets/boom3_0.png' }
+      { name: 'boom', file: 'assets/boom3_0.png' },
+      { name: 'alien', file: 'assets/alien.png' }
     ];
     this.assets = {};
     

@@ -1,3 +1,10 @@
+if (typeof(module) !== 'undefined') {
+  var Base = require('./base').Base;
+  //dodgy loading of Box2d into global context because it's not a module
+  eval(require('fs').readFileSync('./Box2dWeb-2.1.a.3.js').toString('utf8'));
+  var Vec2 = Box2D.Common.Math.b2Vec2;
+}
+
 function RandomLevel(width, height) {
   Base.call(this);
   this.width = width;
@@ -109,25 +116,20 @@ Alien.prototype = Object.create(Base.prototype);
 Alien.prototype.draw = function(game) {
   var screenX = game.physics.scaleToPixels(this.physBody.GetPosition().x)
   , screenY = game.physics.scaleToPixels(this.physBody.GetPosition().y)
-  , radius = game.physics.scaleToPixels(this.radius);
+  , image = game.assets['alien']
+  , radius = game.physics.scaleToPixels(this.radius)
+  , angle = this.physBody.GetAngle();
   
   if (game.isOnScreen(screenX, screenY, radius)) {
-    
-    game.context.beginPath();
-    game.context.fillStyle = "rgb(200, 50, 100)";
-    game.context.arc(
-      game.translateX(screenX), 
-      game.translateY(screenY), 
-      radius, 
-      0, 
-      Math.PI*2, 
-      true
-    );
-    game.context.fill();
-    game.context.strokeStyle = "green";
-    game.context.lineWidth = 1;
-    game.context.stroke();
-    game.context.closePath();
+    angle = Math.PI - angle;
+    if (angle < 0) {
+      angle += Math.PI*2;
+    }
+    game.context.save();
+    game.context.translate(game.translateX(screenX), game.translateY(screenY));
+    game.context.rotate(angle);
+    game.context.drawImage(image, 0, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
+    game.context.restore();
   }
 };
 
@@ -138,12 +140,23 @@ Alien.prototype.tick = function(event) {
     //need to work out a normalised vector between our position and the
     //player's position, then multiply it by our speed
     if (this.playerBody) {
-      var direction = this.playerBody.GetPosition().Copy();
+      var currentAngle = this.physBody.GetAngle()
+      , angle
+      , newAngle
+      , direction = this.playerBody.GetPosition().Copy();
+
       direction.Subtract(this.physBody.GetPosition());
       direction.Normalize();
       direction.Multiply(this.speed);
 
+      angle = Math.atan2(direction.x, direction.y);
+      if (angle >= 0) {
+        this.physBody.SetAngle(angle);
+      } else {
+        this.physBody.SetAngle(Math.PI*2 + angle);
+      }
       this.physBody.ApplyForce(direction, this.physBody.GetPosition());
+      
     }
   }
 };
@@ -175,4 +188,5 @@ Alien.prototype.destroy = function() {
 //support for loading as node.js module, for testing
 if (typeof(module) !== 'undefined') {
   exports.RandomLevel = RandomLevel;
+  exports.Alien = Alien;
 }

@@ -54,8 +54,8 @@ Bullet.prototype.draw = function(game) {
   var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
   , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
   
-  game.context.fillStyle = "rgb(200, 20, 20)";
   game.context.beginPath();
+  game.context.fillStyle = "rgb(200, 20, 20)";
   game.context.arc(
     screenX, 
     screenY, 
@@ -64,10 +64,11 @@ Bullet.prototype.draw = function(game) {
     Math.PI * 2, 
     true
   );
-  game.context.closePath();
   game.context.fill();
   game.context.strokeStyle = "pink";
+  game.context.lineWidth = 1;
   game.context.stroke();
+  game.context.closePath();
 };
 
 Bullet.prototype.hit = function(other, impulse) {

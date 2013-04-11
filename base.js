@@ -32,3 +32,7 @@ Base.prototype.fireEvent = function(eventType, data) {
   });
 };
 
+
+if (typeof(module) !== 'undefined') {
+  exports.Base = Base;
+}
