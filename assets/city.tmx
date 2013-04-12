@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="city" tilewidth="32" tileheight="32">
+  <image source="city.jpg" width="423" height="600"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2TtPFFEYh/HT4weABu2FIJ0atECQRoO3Rpt1vWHBRW4aUMl6K7wV2EGLt1IJ1kQ/gH4l/hPyZl4mAztnWXei8/ySpyHZyQk7mznvmVoI4aaqq1vqtrqj7qp7qlcdVccCOmFSTalpNaMeqFk1p+bVcdWn+staYMUsqWX1WHWpI2pEjarz6qQ6pU6XtcCKGVAn1KDqVj3qsrqirpa4rqoaUmfU2UNeJ3nWTKiH6lFIf19jak2tH/L6iJM8axbUC/UypL+va+qz+lLe0v45/l6+oC62cI2GeqZqId2vbaiP6lM7Flkh/l6+rm6oJ+ppxDXse/T7tW/qu9ps52Ir4LV6o96qd+q9+1tR9j36/dqwOhfiv1uk7H/o911FJM+Hr5nPjatLIf67Rcr+h7H7ri31I/M5Zvvy/FS/wt5nOLN959m88Vv9CXuf4cz2nWfzxnbYfWavlLucSvAzRd5eLPk+Xrm/4+/yM0Xeeciq+rDPZ/3ZpO3d7Bo2szA3xvEzRd55yEH82aTt3ewaNrMwNxZj54D+/rV72s7mm/F73rz3XSjOzgH9/Wv3tJ3NN+P3vHnvu9gDxPP3uJ2r3y/4Wb/nzdsLsAeI5+9xO1dfLHVF1ebv8UbYPVd/XuaCAABAS/xMWHQWTNjZV7Z6e5dXCX7u8DOhzYJF3jfZ2Ve25CyM97hx/NyRd9ZR5H2TnX1lS87CeI8bx88deWcdvG8CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgP/XDqctgyg=
+  </data>
+ </layer>
+</map>
