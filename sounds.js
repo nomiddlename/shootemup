@@ -7,9 +7,11 @@ function SoundEngine() {
   this.playerPosition = null;
 
   this.sounds = {
-    "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav",
+//    "pew-pew": "assets/zander-noriega-scifi-vol-1/laser_gun_2.wav",
+      "pew-pew": "assets/pew.wav",
     "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
-    "boom": "assets/sounds/explosions/6.wav"
+      "boom": "assets/sounds/explosions/6.wav"//,
+//      "thrust": "assets/JBM_Sfxr_pack_1/samples/explosions/small/explosion-4.wav"
   };
   this.soundBuffers = {};
   this.loadSounds();

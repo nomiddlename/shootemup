@@ -47,7 +47,8 @@
     , numberLoaded = 0
     , assetsToLoad = [
       { name: 'boom', file: 'assets/boom3_0.png' },
-      { name: 'alien', file: 'assets/alien.png' }
+	{ name: 'alien', file: 'assets/alien.png' },
+	{ name: 'player', file: 'assets/ship.png' }
     ];
     this.assets = {};
     

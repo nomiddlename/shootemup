@@ -49,7 +49,7 @@ Player.prototype.update = function(event) {
 };
 
 Player.prototype.draw = function(game) {
-  var screenX, screenY, angle, radius, thrusterX, thrusterY;
+    var screenX, screenY, angle, radius, thrusterX, thrusterY, image;
 
   //posX and posY are in world coords
   //need to translate to canvas coordinates
@@ -57,46 +57,17 @@ Player.prototype.draw = function(game) {
   screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
   angle = this.physBody.GetAngle();
   radius = game.physics.scaleToPixels(this.radius);
+    image = game.assets['player'];
 
-  game.context.beginPath();
-  game.context.arc(screenX, screenY, radius, 0, Math.PI*2, true);
-  game.context.fillStyle = "rgb(20, 20, 200)";
-  game.context.fill();
-  game.context.closePath();
-  game.context.beginPath();
-  game.context.strokeStyle = "black";
-  game.context.lineWidth = 1;
-  game.context.moveTo(screenX, screenY);
-  game.context.lineTo(
-    screenX + (radius * Math.sin(angle)), 
-    screenY + (radius * Math.cos(angle))
-  );
-  game.context.stroke();
-  game.context.closePath();
-
-  if (this.thrustLeft) {
-    this.drawThruster(game.context, screenX - (Math.cos(angle)*radius), screenY + (Math.sin(angle)*radius), 5, angle);
-  }
-  if (this.thrustRight) {
-    this.drawThruster(game.context, screenX + (Math.cos(angle)*radius), screenY - (Math.sin(angle)*radius), 5, angle);
-  }
-  if (this.thrustForward) {
-    this.drawThruster(game.context, screenX - (Math.sin(angle)*radius), screenY - (Math.cos(angle)*radius), 10, angle);
-  } 
-};
-
-Player.prototype.drawThruster = function(context, x, y, length, angle) {
-  context.beginPath();
-  context.strokeStyle = "orange";
-  context.moveTo(x, y);
-  context.lineTo(
-    x - (length * Math.sin(angle)),
-    y - (length * Math.cos(angle))
-  );
-  context.lineWidth = 5;
-  context.lineCap = 'round';
-  context.stroke();
-  context.closePath();
+    angle = Math.PI - angle;
+    if (angle < 0) {
+      angle += Math.PI*2;
+    }
+    game.context.save();
+    game.context.translate(screenX, screenY);
+    game.context.rotate(angle);
+    game.context.drawImage(image, 0, 0, 64, 82, -radius, -radius, 2*radius, 2*radius);
+    game.context.restore();    
 };
 
 Player.prototype.fireTheGun = function() {
@@ -135,7 +106,7 @@ Player.prototype.leftThruster = function() {
 
   force.Multiply(5);
   this.physBody.ApplyForce(force, thrusterPosition);
-
+    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
 };
 
 Player.prototype.rightThruster = function() {
@@ -151,6 +122,7 @@ Player.prototype.rightThruster = function() {
 
   force.Multiply(5);
   this.physBody.ApplyForce(force, thrusterPosition);
+    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
 
 };
 
@@ -161,6 +133,7 @@ Player.prototype.forwardThruster = function() {
 
   force.Multiply(10);
   this.physBody.ApplyForce(force, thrusterPosition);
+    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
 };
 
 Player.prototype.rearThruster = function() {
