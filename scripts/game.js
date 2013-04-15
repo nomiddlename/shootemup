@@ -1,25 +1,18 @@
-(function(window, document) {
-  
-  window.onload = function() {
-    var game = new Game()
-    , lastTime = Date.now()
-    , canvas = document.getElementById('theCanvas');
+// Help Node out by setting up define.
+if (typeof module === 'object' && typeof define !== 'function') {
+    var define = function (factory) {
+        module.exports = factory(require, exports, module);
+    };
+}
 
-    game.setCanvas(canvas);
-
-    document.addEventListener("keydown", game.handleKeys.bind(game));
-    document.addEventListener("keyup", game.handleKeys.bind(game));
-    document.addEventListener("webkitfullscreenchange", game.resize.bind(game));
-    
-    (function mainLoop() {
-      var now = Date.now(), delta = now - lastTime;
-      lastTime = now;
-      window.requestAnimationFrame(mainLoop);
-      game.tick(delta);
-      game.physics.updateWorld();
-      game.render();
-    })();
-  };
+define(function (require, exports, module) {
+  var Base = require('./base')
+  , PhysicsEngine = require('./physics')
+  , SoundEngine = require('./sounds')
+  , Player = require('./player')
+  , RandomLevel = require('./level')
+  , Display = require('./display')
+  ;
 
   function Game() {
     Base.call(this);
@@ -47,8 +40,8 @@
     , numberLoaded = 0
     , assetsToLoad = [
       { name: 'boom', file: 'assets/boom3_0.png' },
-	{ name: 'alien', file: 'assets/alien.png' },
-	{ name: 'player', file: 'assets/ship.png' }
+	    { name: 'alien', file: 'assets/alien.png' },
+	    { name: 'player', file: 'assets/ship.png' }
     ];
     this.assets = {};
     
@@ -194,4 +187,5 @@
     }
   };
 
-})(window, document);
+    return Game;
+});
