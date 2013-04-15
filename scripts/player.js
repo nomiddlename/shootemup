@@ -46,7 +46,7 @@ define(function (require, exports, module) {
     if (this.health <= 0) {
       this.die();
     } else {
-//      this.physBody.SetAngularDamping(1.0);
+      this.physBody.SetAngularDamping(1.0);
       if (this.thrustLeft) {
         this.rightThruster();
       }
@@ -61,16 +61,13 @@ define(function (require, exports, module) {
   };
 
   Player.prototype.draw = function(game) {
-    var screenX, screenY, angle, radius, thrusterX, thrusterY, image;
-    
-    //posX and posY are in world coords
-    //need to translate to canvas coordinates
-    screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x));
-    screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
-    angle = this.physBody.GetAngle();
-    radius = game.physics.scaleToPixels(this.radius);
-    image = game.assets['player'];
-    
+    var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
+    , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y))
+    , angle = this.physBody.GetAngle()
+    , radius = game.physics.scaleToPixels(this.radius)
+    , image = game.assets['player']
+    , frame = 0;
+        
     angle = Math.PI - angle;
     if (angle < 0) {
       angle += Math.PI*2;
@@ -78,7 +75,14 @@ define(function (require, exports, module) {
     game.context.save();
     game.context.translate(screenX, screenY);
     game.context.rotate(angle);
-    game.context.drawImage(image, 0, 0, 64, 111, -radius, -radius, 2*radius, 2*radius);
+    if (this.thrustLeft) {
+      frame = 1;
+    } else if (this.thrustRight) {
+      frame = 2;
+    } else if (this.thrustForward) {
+      frame = 3;
+    }
+    game.context.drawImage(image, frame*64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
     game.context.restore();    
   };
 
@@ -100,7 +104,6 @@ define(function (require, exports, module) {
     case this.keys.left: this.thrustLeft = true; break;
     case this.keys.right: this.thrustRight = true; break;
     case this.keys.up: this.thrustForward = true; break;
-      //case this.keys.down: this.rearThrust = true; break;
     case this.keys.fire: this.fireTheGun(); break;
     }
   };
