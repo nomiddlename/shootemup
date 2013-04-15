@@ -21,6 +21,7 @@ define(function (require, exports, module) {
     this.thrustLeft = false;
     this.thrustRight = false;
     this.thrustForward = false;
+    this.thrustSoundStart = 0;
     
     //we want to take part in the physics of the world
     this.fireEvent("physics.register");
@@ -56,6 +57,16 @@ define(function (require, exports, module) {
       if (this.thrustForward) {
         this.forwardThruster();
       }
+      if (this.thrustLeft || this.thrustRight || this.thrustForward) {
+        if (this.thrustSoundStart === 0 || this.thrustSoundStart > 480) {
+          this.fireEvent("sounds", { name: "thrust", position: this.physBody.GetPosition() });
+          this.thrustSoundStart = 0;
+        }
+        this.thrustSoundStart += tockMs;
+      } else {
+        this.thrustSoundStart = 0;
+      }
+
     }
 
   };
@@ -121,7 +132,6 @@ define(function (require, exports, module) {
     
     force.Multiply(5);
     this.physBody.ApplyForce(force, thrusterPosition);
-    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
   };
   
   Player.prototype.rightThruster = function() {
@@ -136,9 +146,7 @@ define(function (require, exports, module) {
     thrusterPosition.Subtract(thrusterOffset);
     
     force.Multiply(5);
-    this.physBody.ApplyForce(force, thrusterPosition);
-    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
-    
+    this.physBody.ApplyForce(force, thrusterPosition);    
   };
 
   Player.prototype.forwardThruster = function() {
@@ -148,7 +156,6 @@ define(function (require, exports, module) {
     
     force.Multiply(10);
     this.physBody.ApplyForce(force, thrusterPosition);
-    this.fireEvent("sounds", { name: "thrust", position: thrusterPosition });
   };
 
   Player.prototype.rearThruster = function() {
