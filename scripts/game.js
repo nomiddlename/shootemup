@@ -7,17 +7,19 @@ if (typeof module === 'object' && typeof define !== 'function') {
 
 define(function (require, exports, module) {
   var Base = require('./base')
+  , AssetLoader = require('./asset-loader')
   , PhysicsEngine = require('./physics')
   , SoundEngine = require('./sounds')
   , Player = require('./player')
-  , RandomLevel = require('./level')
+  , TiledLevel = require('./tiled-level')
   , Display = require('./display')
+  , firstLevel = require('json!../assets/city.json')
   ;
 
   function Game() {
     Base.call(this);
-    this.windowX = 2100;
-    this.windowY = 2200;
+    this.windowX = 0;
+    this.windowY = 0;
     this.width = 800;
     this.height = 600;
     this.zIndices = [];
@@ -25,48 +27,29 @@ define(function (require, exports, module) {
 
     this.on("render.register", this.addToRenderList);
     this.on("render.deregister", this.removeFromRenderList);
-
-    this.physics = new PhysicsEngine();
-    this.sounds = new SoundEngine();
-
-    this.loadAssets(this.assetsLoaded.bind(this));
-                    
+    this.on("assets.loaded", this.assetsLoaded);
     this.on("game.start", this.createPlayer);
+
+    this.assetLoader = new AssetLoader([
+      { name: 'boom', file: 'assets/boom3_0.png' },
+	    { name: 'alien', file: 'assets/alien.png' },
+	    { name: 'player', file: 'assets/ship.png' },
+      { name: 'city.jpg', file: 'assets/city.jpg' }
+    ]);
+    this.physics = new PhysicsEngine();
+    this.sounds = new SoundEngine();                    
   }
   Game.prototype = Object.create(Base.prototype);
 
-  Game.prototype.loadAssets = function(cb) {
-    var self = this
-    , numberLoaded = 0
-    , assetsToLoad = [
-      { name: 'boom', file: 'assets/boom3_0.png' },
-	    { name: 'alien', file: 'assets/alien.png' },
-	    { name: 'player', file: 'assets/ship.png' }
-    ];
-    this.assets = {};
-    
-    assetsToLoad.forEach(function(asset) {
-      var image = new Image();
-      image.onload = function() {
-        self.assets[asset.name] = image;
-        numberLoaded += 1;
-        if (numberLoaded >= assetsToLoad.length) {
-          cb();
-        }
-      };
-      image.src = asset.file;
-    });
-
-  };
-
-  Game.prototype.assetsLoaded = function() {
-    this.level = new RandomLevel(5000, 5000);
+  Game.prototype.assetsLoaded = function(event) {
+    this.assets = event.data;
+    this.level = new TiledLevel(firstLevel);
+    this.windowX = this.level.width / 2;
+    this.windowY = this.level.height / 2;
     this.display = new Display(this.width, this.height);
   };
 
   Game.prototype.createPlayer = function(event) {
-    this.windowX = 2100;
-    this.windowY = 2200;
     this.player = new Player(
       {
         posX: this.physics.scaleToWorld(this.windowX + (this.width / 2)),    //in game coords
@@ -143,11 +126,14 @@ define(function (require, exports, module) {
     }
   };
 
-  Game.prototype.isOnScreen = function(posX, posY, radius) {
-    return (posX + radius > this.windowX) 
-      && (posX - radius < this.windowX + this.width)
-      && (posY + radius > this.windowY)
-      && (posY - radius < this.windowY + this.height);
+  Game.prototype.isOnScreen = function(posX, posY, width, height) {
+    if (!height) {
+      height = width;
+    }
+    return (posX + width > this.windowX) 
+      && (posX - width < this.windowX + this.width)
+      && (posY + height > this.windowY)
+      && (posY - height < this.windowY + this.height);
   };
 
   Game.prototype.toggleFullScreen = function() {

@@ -7,7 +7,6 @@ if (typeof module === 'object' && typeof define !== 'function') {
 
 define(function (require, exports, module) {
   var Base = require('./base')
-  , Vec2 = require('./box2d').Common.Math.b2Vec2
   , Alien = require('./alien');
 
   function RandomLevel(width, height) {
