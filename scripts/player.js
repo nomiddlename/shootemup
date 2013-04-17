@@ -111,7 +111,7 @@ define(function (require, exports, module) {
   };
 
   Player.prototype.startMoving = function(event) {
-    switch(event.data.key) {
+    switch(event.data.code) {
     case this.keys.left: this.thrustLeft = true; break;
     case this.keys.right: this.thrustRight = true; break;
     case this.keys.up: this.thrustForward = true; break;
@@ -164,11 +164,10 @@ define(function (require, exports, module) {
   
 
   Player.prototype.stopMoving = function(event) {
-    switch(event.data.key) {
+    switch(event.data.code) {
     case this.keys.left: this.thrustLeft = false; break;
     case this.keys.right: this.thrustRight = false; break;
     case this.keys.up: this.thrustForward = false; break;
-      //case this.keys.down: this.speedY = 0; break;
     case this.keys.fire: this.gun.stopFiring(); break;
     }
   };

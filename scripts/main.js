@@ -7,8 +7,8 @@ requirejs.config({
 });
        
 require(
-  ['domReady!', 'requestAnimationFrame', 'game'], 
-  function(document, requestAnimationFrame, Game) {
+  ['domReady!', 'requestAnimationFrame', 'fullscreen', 'game'], 
+  function(document, requestAnimationFrame, fullscreen, Game) {
     var game = new Game()
     , lastTime = Date.now()
     , canvas = document.getElementById('theCanvas');
@@ -17,8 +17,8 @@ require(
 
     document.addEventListener("keydown", game.handleKeys.bind(game));
     document.addEventListener("keyup", game.handleKeys.bind(game));
-    document.addEventListener("webkitfullscreenchange", game.resize.bind(game));
-    
+    fullscreen.addEventListener(game.resize.bind(game));
+
     (function mainLoop() {
       var now = Date.now(), delta = now - lastTime;
       lastTime = now;

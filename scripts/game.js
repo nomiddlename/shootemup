@@ -14,6 +14,7 @@ define(function (require, exports, module) {
   , TiledLevel = require('./tiled-level')
   , Display = require('./display')
   , firstLevel = require('json!../assets/city.json')
+  , fullscreen = require('./fullscreen')
   ;
 
   function Game() {
@@ -58,11 +59,11 @@ define(function (require, exports, module) {
         health: 200,
         damage: 200,
         keys: {
-          left: 'a', // left arrow = 37,
-          right: 'd', // right arrow = 39,
-          up: 'w', // up arrow = 38,
-          down: 's', // down arrow = 40,
-          fire: ' ' // space = 32
+          left: 37,
+          right: 39,
+          up: 38,
+          down: 40,
+          fire: 32
         }
       }
     );
@@ -136,18 +137,10 @@ define(function (require, exports, module) {
       && (posY - height < this.windowY + this.height);
   };
 
-  Game.prototype.toggleFullScreen = function() {
-    if (document.webkitIsFullScreen) {
-      document.webkitCancelFullScreen();
-    } else {
-      this.canvas.webkitRequestFullScreen(true);
-    }
-  };
 
   Game.prototype.resize = function() {
     var rect;
-    console.log("in resize, with document.webkitIsFullScreen = ", document.webkitIsFullScreen);
-    if (document.webkitIsFullScreen) {
+    if (fullscreen.isFullScreen()) {
       this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
       this.width = window.innerWidth;
@@ -162,8 +155,8 @@ define(function (require, exports, module) {
 
   Game.prototype.handleKeys = function(event) {
     var key = String.fromCharCode(event.keyCode).toLowerCase();
-    if (key === 'f') {
-      this.toggleFullScreen();
+    if (fullscreen.supported && key === 'f') {
+      fullscreen.toggle(this.canvas);
     } else {
       this.fireEvent(event.type, { key: key, code: event.keyCode });
     }
@@ -173,5 +166,5 @@ define(function (require, exports, module) {
     }
   };
 
-    return Game;
+  return Game;
 });
