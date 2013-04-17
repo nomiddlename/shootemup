@@ -7,27 +7,31 @@ if (typeof module === 'object' && typeof define !== 'function') {
 
 define(function (require, exports, module) {
   var Base = require('./base')
-  , BufferLoader = require('./bufferLoader');
+  , BufferLoader = require('./bufferLoader')
+  , AudioContext = require('./audio-context');
 
   function SoundEngine() {
     Base.call(this);
 
-    this.context = new webkitAudioContext();
-    this.gainNode = this.context.createGainNode();
-    this.gainNode.connect(this.context.destination);
-    this.playerPosition = null;
+      if (AudioContext) {
+	  this.context = new AudioContext();
+	  this.gainNode = this.context.createGainNode();
+	  this.gainNode.connect(this.context.destination);
+	  this.playerPosition = null;
 
-    this.sounds = {
-      "pew-pew": "assets/pew.mp3",
-      "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
-      "boom": "assets/sounds/explosions/6.wav",
-      "thrust": "assets/thrust.mp3"
-    };
-    this.soundBuffers = {};
-    this.loadSounds();
-    
-    this.on("sounds", this.playSound);
-    this.on("player.move", this.updatePlayerPosition);
+	  this.sounds = {
+	      "pew-pew": "assets/pew.mp3",
+	      "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
+	      "boom": "assets/sounds/explosions/6.wav",
+	      "thrust": "assets/thrust.mp3"
+	  };
+	  this.soundBuffers = {};
+	  this.loadSounds();
+	  this.on("sounds", this.playSound);
+	  this.on("player.move", this.updatePlayerPosition);
+      } else {
+	  console.log("No support for HTML5 Web Audio API. Sorry, no sounds for you :(");
+      }
   }
   SoundEngine.prototype = Object.create(Base.prototype);
 
