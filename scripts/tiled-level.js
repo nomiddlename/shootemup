@@ -36,23 +36,18 @@ define(function (require, exports, module) {
   TiledLevel.prototype.draw = function(game) {
     var self = this
     , tiles = game.assets[this.config.tilesets[0].image]
-    , tileData = this.config.layers[0].data;
+    , tileData = this.config.layers[0].data
+    , startTile = this.getTileNumber(game.windowX, game.windowY)
+    , endRow = this.getTileNumber(game.windowX, game.windowY + game.height)
+    , tilesInRow = Math.ceil(game.width / this.config.tilewidth)
+    , tileNumber
+    , rowNumber;
 
-    //This is a bit inefficient
-    //We could calculate the starting row and column
-    //and avoid checking to see if each tile was on screen
-    //but the maths gets messy and this is easier to read
-
-    tileData.forEach(function(tileIdx, tileNumber) {
-      var tileInfo = self.getTileInfo(tileIdx)
-      , tilePosition = self.getTilePosition(tileNumber);
-
-      if (game.isOnScreen(
-        tilePosition.x
-        , tilePosition.y
-        , self.config.tilewidth 
-        , self.config.tileheight
-      )) {
+    for (rowNumber = startTile; rowNumber <= endRow; rowNumber += this.config.width) {
+      for (tileNumber = rowNumber; tileNumber <= (rowNumber + tilesInRow); tileNumber += 1) {
+        var tileInfo = self.getTileInfo(tileData[tileNumber])
+        , tilePosition = self.getTilePosition(tileNumber);
+        
         game.context.drawImage(
           tiles
           , tileInfo.x
@@ -65,7 +60,15 @@ define(function (require, exports, module) {
           , self.config.tileheight
         );
       }
-    });
+    }
+  };
+
+  //given a game X,Y work out the tile's number in the data list
+  TiledLevel.prototype.getTileNumber = function(x, y) {
+    var row = Math.floor(y / this.config.tileheight)
+    , column = Math.floor(x / this.config.tilewidth);
+
+    return (row * this.config.width) + column;
   };
      
   //given the tile's index, works out the source image positions
