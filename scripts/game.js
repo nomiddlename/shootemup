@@ -13,7 +13,7 @@ define(function (require, exports, module) {
   , Player = require('./player')
   , TiledLevel = require('./tiled-level')
   , Display = require('./display')
-  , firstLevel = require('json!../assets/city.json')
+  , firstLevel = require('json!../assets/city-bigger.json')
   , fullscreen = require('./fullscreen')
   ;
 
