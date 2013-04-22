@@ -6,7 +6,9 @@ if (typeof module === 'object' && typeof define !== 'function') {
 }
 
 define(function (require, exports, module) {
-  var Base = require('./base');
+  var Base = require('./base')
+  , big = 40
+  , small = 25;
 
   function Display(width, height) {
     Base.call(this);
@@ -25,29 +27,32 @@ define(function (require, exports, module) {
   Display.prototype = Object.create(Base.prototype);
 
   Display.prototype.write = function(context, size, align, text, x, y) {
+    context.beginPath();
     context.font = "bold " + size + "px Arial";
     context.fillStyle = "black";
     context.textAlign = align;
-    context.fillText(text, x+2, y+2);
-    context.fillStyle = "white";
+    context.fillText(text, x+3, y+3);
+    context.fillStyle = "orange";
     context.fillText(text, x, y);
+    context.strokeStyle = "gold";
+    context.lineWidth = 1;
+    context.strokeText(text, x, y);
+    context.closePath();
   }
   
   Display.prototype.draw = function(game) {
     var context = game.context;
-    //draw the player's current health
-    this.write(context, 20, "start", "Health: " + this.playerHealth, 50, 50);
-    //draw the player's score
-    this.write(context, 20, "end", "Score: " + this.score, game.width - 50, 50);
+    this.write(context, small, "start", "Health: " + this.playerHealth, 50, 50);
+    this.write(context, small, "end", "Aliens Destroyed: " + this.score, game.width - 50, 50);
     
     //if game.over, let them know
     if (this.gameIsOver) {
-      this.write(context, 40, "center", "Game Over", game.width / 2, game.height / 2);
-      this.write(context, 20, "center", "Press any key to start again", game.width / 2, game.height / 2 + 100);
+      this.write(context, big, "center", "Game Over", game.width / 2, game.height / 2);
+      this.write(context, small, "center", "Press space to start again", game.width / 2, game.height / 2 + 100);
     }
 
     if (!this.gameHasStarted && !this.gameIsOver) {
-      this.write(context, 40, "center", "Press any key to start", game.width / 2, game.height / 2);
+      this.write(context, big, "center", "Press space to start", game.width / 2, game.height / 2);
     }
   };
 
@@ -56,7 +61,7 @@ define(function (require, exports, module) {
   };
 
   Display.prototype.updateScore = function(event) {
-    this.score += 10;
+    this.score += 1;
   };
 
   Display.prototype.gameOver = function(event) {
