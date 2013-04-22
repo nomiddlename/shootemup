@@ -1,8 +1,8 @@
 // Help Node out by setting up define.
 if (typeof module === 'object' && typeof define !== 'function') {
-    var define = function (factory) {
-        module.exports = factory(require, exports, module);
-    };
+  var define = function (factory) {
+    module.exports = factory(require, exports, module);
+  };
 }
 
 define(function (require, exports, module) {
@@ -13,25 +13,25 @@ define(function (require, exports, module) {
   function SoundEngine() {
     Base.call(this);
 
-      if (AudioContext) {
-	  this.context = new AudioContext();
-	  this.gainNode = this.context.createGainNode();
-	  this.gainNode.connect(this.context.destination);
-	  this.playerPosition = null;
+    if (AudioContext) {
+	    this.context = new AudioContext();
+	    this.gainNode = this.context.createGainNode();
+	    this.gainNode.connect(this.context.destination);
+	    this.playerPosition = null;
 
-	  this.sounds = {
+	    this.sounds = {
 	      "pew-pew": "assets/pew.mp3",
 	      "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
 	      "boom": "assets/sounds/explosions/6.wav",
 	      "thrust": "assets/thrust.mp3"
-	  };
-	  this.soundBuffers = {};
-	  this.loadSounds();
-	  this.on("sounds", this.playSound);
-	  this.on("player.move", this.updatePlayerPosition);
-      } else {
-	  console.log("No support for HTML5 Web Audio API. Sorry, no sounds for you :(");
-      }
+	    };
+	    this.soundBuffers = {};
+	    this.loadSounds();
+	    this.on("sounds", this.playSound);
+	    this.on("player.move", this.updatePlayerPosition);
+    } else {
+	    console.log("No support for HTML5 Web Audio API. Sorry, no sounds for you :(");
+    }
   }
   SoundEngine.prototype = Object.create(Base.prototype);
 
@@ -65,10 +65,10 @@ define(function (require, exports, module) {
       position.Subtract(this.playerPosition);
       distance = position.Length();
       
-      if (distance > 30) {
+      if (distance > 60) {
         volume = 0;
       } else {
-        volume = 1 - (distance/30);
+        volume = 1 - (distance/60);
       }
     }
 
