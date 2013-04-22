@@ -13,7 +13,7 @@ define(function (require, exports, module) {
   function Alien(posX, posY, speed, health, damage) {
     this.position = new Vec2(posX, posY);
     this.speed = speed;
-    this.radius = 1.2;
+    this.radius = 0.8;
     this.health = health;
     this.damage = damage;
     this.frame = Math.floor(Math.random() * 8);
