@@ -18,9 +18,11 @@ define(function (require, exports, module) {
 
     this.width = this.config.width * this.config.tilewidth;
     this.height = this.config.height * this.config.tileheight;
-    this.config.tilesets[0].numXTiles = Math.floor(
-      this.config.tilesets[0].imagewidth / this.config.tilewidth
-    );
+    this.config.tilesets.forEach(function(tileset) {
+      tileset.numXTiles = Math.floor(
+        tileset.imagewidth / tileset.tilewidth
+      );
+    });
 
     //let the game know how big we are
     this.fireEvent("boundary", { left: 0, right: this.width, bottom: 0, top: this.height });
@@ -34,33 +36,32 @@ define(function (require, exports, module) {
   TiledLevel.prototype = Object.create(Base.prototype);
 
   TiledLevel.prototype.draw = function(game) {
-    var self = this
-    , tiles = game.assets[this.config.tilesets[0].image]
-    , tileData = this.config.layers[0].data
-    , startTile = this.getTileNumber(game.windowX, game.windowY)
-    , endRow = this.getTileNumber(game.windowX, game.windowY + game.height)
-    , tilesInRow = Math.ceil(game.width / this.config.tilewidth)
-    , tileNumber
-    , rowNumber;
+    var self = this;
 
-    for (rowNumber = startTile; rowNumber <= endRow; rowNumber += this.config.width) {
-      for (tileNumber = rowNumber; tileNumber <= (rowNumber + tilesInRow); tileNumber += 1) {
-        var tileInfo = self.getTileInfo(tileData[tileNumber])
-        , tilePosition = self.getTilePosition(tileNumber);
-        
-        game.context.drawImage(
-          tiles
-          , tileInfo.x
-          , tileInfo.y
-          , self.config.tilewidth
-          , self.config.tileheight
-          , game.translateX(tilePosition.x)
-          , game.translateY(tilePosition.y)
-          , self.config.tilewidth
-          , self.config.tileheight
-        );
-      }
-    }
+    this.config.layers.forEach(function(layer) {
+      
+      layer.data.forEach(function(tileIndex, tileNumber) {
+        //tileIndex of zero means don't draw a tile here
+        if (tileIndex > 0) {
+          var tileInfo = self.getTileInfo(tileIndex)
+          , tilePosition = self.getTilePosition(tileNumber, layer.properties.parallax);
+          
+          if (game.isOnScreen(tilePosition.x, tilePosition.y, tileInfo.width, tileInfo.height)) {
+            game.context.drawImage(
+              game.assets[tileInfo.image]
+              , tileInfo.x
+              , tileInfo.y
+              , tileInfo.width
+              , tileInfo.height
+              , game.translateX(tilePosition.x)
+              , game.translateY(tilePosition.y)
+              , tileInfo.width
+              , tileInfo.height
+            );
+          }
+        }
+      });
+    });
   };
 
   //given a game X,Y work out the tile's number in the data list
@@ -71,16 +72,27 @@ define(function (require, exports, module) {
     return (row * this.config.width) + column;
   };
      
-  //given the tile's index, works out the source image positions
+  //given the tile's index, works out the source image info
   TiledLevel.prototype.getTileInfo = function(tileIndex) {
+    var i, tileset;
+    for (i = this.config.tilesets.length - 1; i >=0 ; i -= 1) {
+      if (this.config.tilesets[i].firstgid <= tileIndex) {
+        tileset = this.config.tilesets[i];
+        break;
+      }
+    }
+
     return {
-      x: Math.floor((tileIndex - 1) % this.config.tilesets[0].numXTiles) * this.config.tilewidth,
-      y: Math.floor((tileIndex - 1) / this.config.tilesets[0].numXTiles) * this.config.tileheight
+      image: tileset.image,
+      width: tileset.tilewidth,
+      height: tileset.tileheight,
+      x: Math.floor((tileIndex - tileset.firstgid) % tileset.numXTiles) * tileset.tilewidth,
+      y: Math.floor((tileIndex - tileset.firstgid) / tileset.numXTiles) * tileset.tileheight
     };
   };
 
   //given the tile's position in the data list, work out the screen position
-  TiledLevel.prototype.getTilePosition = function(tileNumber) {
+  TiledLevel.prototype.getTilePosition = function(tileNumber, parallax) {
     return {
       x: Math.floor(tileNumber % this.config.width) * this.config.tilewidth,
       y: Math.floor(tileNumber / this.config.width) * this.config.tileheight

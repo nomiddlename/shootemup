@@ -35,7 +35,8 @@ define(function (require, exports, module) {
       { name: 'boom', file: 'assets/boom3_0.png' },
 	    { name: 'alien', file: 'assets/alien.png' },
 	    { name: 'player', file: 'assets/ship.png' },
-      { name: 'city.jpg', file: 'assets/city.jpg' }
+      { name: 'city.jpg', file: 'assets/city.jpg' },
+      { name: 'clouds.png', file: 'assets/clouds.png' }
     ]);
     this.physics = new PhysicsEngine();
     this.sounds = new SoundEngine();                    
