@@ -44,7 +44,7 @@ define(function (require, exports, module) {
         //tileIndex of zero means don't draw a tile here
         if (tileIndex > 0) {
           var tileInfo = self.getTileInfo(tileIndex)
-          , tilePosition = self.getTilePosition(tileNumber, layer.properties.parallax);
+          , tilePosition = self.getTilePosition(tileNumber);
           
           if (game.isOnScreen(tilePosition.x, tilePosition.y, tileInfo.width, tileInfo.height)) {
             game.context.drawImage(
@@ -62,6 +62,7 @@ define(function (require, exports, module) {
         }
       });
     });
+
   };
 
   //given a game X,Y work out the tile's number in the data list
@@ -92,7 +93,7 @@ define(function (require, exports, module) {
   };
 
   //given the tile's position in the data list, work out the screen position
-  TiledLevel.prototype.getTilePosition = function(tileNumber, parallax) {
+  TiledLevel.prototype.getTilePosition = function(tileNumber) {
     return {
       x: Math.floor(tileNumber % this.config.width) * this.config.tilewidth,
       y: Math.floor(tileNumber / this.config.width) * this.config.tileheight
