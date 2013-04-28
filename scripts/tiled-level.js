@@ -29,7 +29,7 @@ define(function (require, exports, module) {
     //register us for drawing at zIndex = 0 (right at the bottom)
     this.fireEvent("render.register", 0);
     
-//    this.on("game.start", this.setupAlienHordes);
+    this.on("game.start", this.setupAlienHordes);
     this.on("enemy.death", this.spawnMoreAliens);
 
   }
