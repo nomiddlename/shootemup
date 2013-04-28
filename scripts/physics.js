@@ -40,7 +40,7 @@ define(function (require, exports, module) {
     contactListener.PostSolve = this.postSolve.bind(this);
     this.world.SetContactListener(contactListener);
     
-    this.on("boundary", this.updateBoundary);
+    this.on("boundary.world", this.updateBoundary);
     this.on("physics.register", this.addAThing);
     this.on("physics.deregister", this.removeAThing);
   }
@@ -74,47 +74,27 @@ define(function (require, exports, module) {
     bodyDef.type = Body.b2_staticBody;
 
     //left side of the world
-    bodyDef.position = new Vec2(
-      this.scaleToWorld(bounds.left), 
-      this.scaleToWorld((bounds.top - bounds.bottom) / 2)
-    );
+    bodyDef.position = new Vec2(bounds.left, (bounds.top - bounds.bottom) / 2);
     fixtureDef.shape = new PolygonShape();
-    fixtureDef.shape.SetAsBox(0.5, this.scaleToWorld((bounds.top - bounds.bottom) / 2));
+    fixtureDef.shape.SetAsBox(0.5, (bounds.top - bounds.bottom) / 2);
     boundaryBodies.push(this.world.CreateBody(bodyDef).CreateFixture(fixtureDef));
   
     //right side of the world
-    bodyDef.position = new Vec2(
-      this.scaleToWorld(bounds.right),
-      this.scaleToWorld((bounds.top - bounds.bottom) / 2)
-    );
+    bodyDef.position = new Vec2(bounds.right, (bounds.top - bounds.bottom) / 2);
     //fixture should be the same, can reuse.
     boundaryBodies.push(this.world.CreateBody(bodyDef).CreateFixture(fixtureDef));
   
     //top of the world
-    bodyDef.position = new Vec2(
-      this.scaleToWorld((bounds.right - bounds.left) / 2),
-      this.scaleToWorld(bounds.top) 
-    );
+    bodyDef.position = new Vec2((bounds.right - bounds.left) / 2, bounds.top);
     fixtureDef.shape = new PolygonShape();
-    fixtureDef.shape.SetAsBox(this.scaleToWorld((bounds.right - bounds.left) / 2), 0.5);
+    fixtureDef.shape.SetAsBox((bounds.right - bounds.left) / 2, 0.5);
     boundaryBodies.push(this.world.CreateBody(bodyDef).CreateFixture(fixtureDef));
     
     //bottom of the world
-    bodyDef.position = new Vec2(
-      this.scaleToWorld((bounds.right - bounds.left) / 2),
-      this.scaleToWorld(bounds.bottom)
-    );
+    bodyDef.position = new Vec2((bounds.right - bounds.left) / 2, bounds.bottom);
     boundaryBodies.push(this.world.CreateBody(bodyDef).CreateFixture(fixtureDef));
 
     return boundaryBodies;
-  };
-
-  PhysicsEngine.prototype.scaleToWorld = function(valueInPx) {
-    return valueInPx / 30;
-  };
-
-  PhysicsEngine.prototype.scaleToPixels = function(valueInWorld) {
-    return valueInWorld * 30;
   };
   
   PhysicsEngine.prototype.addAThing = function(event) {

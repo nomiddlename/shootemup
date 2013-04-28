@@ -10,6 +10,7 @@ define(function (require, exports, module) {
   , AssetLoader = require('./asset-loader')
   , PhysicsEngine = require('./physics')
   , SoundEngine = require('./sounds')
+  , Camera = require('./camera')
   , Player = require('./player')
   , TiledLevel = require('./tiled-level')
   , Display = require('./display')
@@ -19,10 +20,7 @@ define(function (require, exports, module) {
 
   function Game() {
     Base.call(this);
-    this.windowX = 0;
-    this.windowY = 0;
-    this.width = 800;
-    this.height = 600;
+
     this.zIndices = [];
     this.renderList = {};
 
@@ -46,16 +44,14 @@ define(function (require, exports, module) {
   Game.prototype.assetsLoaded = function(event) {
     this.assets = event.data;
     this.level = new TiledLevel(firstLevel);
-    this.windowX = this.level.width / 2;
-    this.windowY = this.level.height / 2;
-    this.display = new Display(this.width, this.height);
+    this.display = new Display();
   };
 
   Game.prototype.createPlayer = function(event) {
     this.player = new Player(
       {
-        posX: this.physics.scaleToWorld(this.windowX + (this.width / 2)),    //in game coords
-        posY: this.physics.scaleToWorld(this.windowY + (this.height / 2)),    //in game coords
+        posX: this.camera.scaleToWorld(this.level.width / 2),    //in game coords
+        posY: this.camera.scaleToWorld(this.level.height / 2),    //in game coords
         radius: 0.8,
         health: 200,
         damage: 200,
@@ -73,13 +69,11 @@ define(function (require, exports, module) {
   Game.prototype.setCanvas = function(canvas) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.camera = new Camera(canvas.width, canvas.height);
   };
   
   Game.prototype.tick = function(tockMs) {
     this.fireEvent("tick", tockMs);
-    this.moveWindow();
   };
 
   Game.prototype.addToRenderList = function(event) {
@@ -98,59 +92,25 @@ define(function (require, exports, module) {
 
   Game.prototype.render = function() {
     var self = this;
-    this.context.clearRect(0, 0, this.width, this.height);
+    this.context.clearRect(0, 0, this.camera.width, this.camera.height);
     this.zIndices.forEach(function(zIndex) {
       self.renderList[zIndex].forEach(function(thing) {
-        thing.draw.call(thing, self);
+        thing.draw.call(thing, self.context, self.camera, self.assets);
       });
     });
 
   };
-
-  Game.prototype.translateX = function(gamePosX) {
-    return gamePosX - this.windowX;
-  };
-
-  Game.prototype.translateY = function(gamePosY) {
-    return gamePosY - this.windowY;
-  };
-
-
-  Game.prototype.moveWindow = function() {
-    //we want to move the window when the player gets within 100px of
-    //the edges of the screen
-    //but let's start with centring the player on the screen
-    if (this.player) {
-      var posX = this.physics.scaleToPixels(this.player.physBody.GetPosition().x)
-      , posY = this.physics.scaleToPixels(this.player.physBody.GetPosition().y);
-      this.windowX = posX - (this.width / 2);
-      this.windowY = posY - (this.height / 2);
-    }
-  };
-
-  Game.prototype.isOnScreen = function(posX, posY, width, height) {
-    if (!height) {
-      height = width;
-    }
-    return (posX + width > this.windowX) 
-      && (posX - width < this.windowX + this.width)
-      && (posY + height > this.windowY)
-      && (posY - height < this.windowY + this.height);
-  };
-
 
   Game.prototype.resize = function() {
     var rect;
     if (fullscreen.isFullScreen()) {
       this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
-      this.width = window.innerWidth;
-      this.height = window.innerHeight;
+      this.camera.resize(window.innerWidth, window.innerHeight);
     } else {
       this.canvas.width = 800;
       this.canvas.height = 600;
-      this.width = 800;
-      this.height = 600;
+      this.camera.resize(800, 600);
     }
   };
 

@@ -18,14 +18,14 @@ define(function (require, exports, module) {
   }
   Explosion.prototype = Object.create(Base.prototype);
 
-  Explosion.prototype.draw = function(game) {
-    var frames = game.assets['boom']
+  Explosion.prototype.draw = function(context, camera, assets) {
+    var frames = assets['boom']
     , frameX = Math.round(Math.random() * 8) * 128
     , frameY = Math.round(this.currentFrame) * 128
-    , screenX = game.translateX(game.physics.scaleToPixels(this.position.x)) - 64
-    , screenY = game.translateY(game.physics.scaleToPixels(this.position.y)) - 64;
+    , screenX = camera.translateX(camera.scaleToPixels(this.position.x)) - 64
+    , screenY = camera.translateY(camera.scaleToPixels(this.position.y)) - 64;
     
-    game.context.drawImage(frames, frameX, frameY, 128, 128, screenX, screenY, 128, 128);
+    context.drawImage(frames, frameX, frameY, 128, 128, screenX, screenY, 128, 128);
   };
 
   Explosion.prototype.update = function(tock) {

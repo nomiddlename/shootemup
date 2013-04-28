@@ -10,10 +10,8 @@ define(function (require, exports, module) {
   , big = 40
   , small = 25;
 
-  function Display(width, height) {
+  function Display() {
     Base.call(this);
-    this.width = width;
-    this.height = height;
     
     this.playerHealth = 0;
     this.score = 0;
@@ -40,19 +38,18 @@ define(function (require, exports, module) {
     context.closePath();
   }
   
-  Display.prototype.draw = function(game) {
-    var context = game.context;
+  Display.prototype.draw = function(context, camera) {
     this.write(context, small, "start", "Health: " + this.playerHealth, 50, 50);
-    this.write(context, small, "end", "Aliens Destroyed: " + this.score, game.width - 50, 50);
+    this.write(context, small, "end", "Aliens Destroyed: " + this.score, camera.width - 50, 50);
     
     //if game.over, let them know
     if (this.gameIsOver) {
-      this.write(context, big, "center", "Game Over", game.width / 2, game.height / 2);
-      this.write(context, small, "center", "Press space to start again", game.width / 2, game.height / 2 + 100);
+      this.write(context, big, "center", "Game Over", camera.hwidth, camera.hheight);
+      this.write(context, small, "center", "Press space to start again", camera.hwidth, camera.hheight + 100);
     }
 
     if (!this.gameHasStarted && !this.gameIsOver) {
-      this.write(context, big, "center", "Press space to start", game.width / 2, game.height / 2);
+      this.write(context, big, "center", "Press space to start", camera.hwidth, camera.hheight);
     }
   };
 

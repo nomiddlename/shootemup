@@ -61,25 +61,25 @@ define(function (require, exports, module) {
     }
   };
 
-  Bullet.prototype.draw = function(game) {
-    var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
-    , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y));
+  Bullet.prototype.draw = function(context, camera) {
+    var screenX = camera.translateX(camera.scaleToPixels(this.physBody.GetPosition().x))
+    , screenY = camera.translateY(camera.scaleToPixels(this.physBody.GetPosition().y));
     
-    game.context.beginPath();
-    game.context.fillStyle = "rgb(200, 20, 20)";
-    game.context.arc(
+    context.beginPath();
+    context.fillStyle = "rgb(200, 20, 20)";
+    context.arc(
       screenX, 
       screenY, 
-      game.physics.scaleToPixels(this.radius), 
+      camera.scaleToPixels(this.radius), 
       0, 
       Math.PI * 2, 
       true
     );
-    game.context.fill();
-    game.context.strokeStyle = "pink";
-    game.context.lineWidth = 1;
-    game.context.stroke();
-    game.context.closePath();
+    context.fill();
+    context.strokeStyle = "pink";
+    context.lineWidth = 1;
+    context.stroke();
+    context.closePath();
   };
 
   Bullet.prototype.hit = function(other, impulse) {

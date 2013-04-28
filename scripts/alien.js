@@ -26,23 +26,23 @@ define(function (require, exports, module) {
   }
   Alien.prototype = Object.create(Base.prototype);
 
-  Alien.prototype.draw = function(game) {
-    var screenX = game.physics.scaleToPixels(this.physBody.GetPosition().x)
-    , screenY = game.physics.scaleToPixels(this.physBody.GetPosition().y)
-    , image = game.assets['alien']
-    , radius = game.physics.scaleToPixels(this.radius)
+  Alien.prototype.draw = function(context, camera, assets) {
+    var screenX = camera.scaleToPixels(this.physBody.GetPosition().x)
+    , screenY = camera.scaleToPixels(this.physBody.GetPosition().y)
+    , image = assets['alien']
+    , radius = camera.scaleToPixels(this.radius)
     , angle = this.physBody.GetAngle();
     
-    if (game.isOnScreen(screenX, screenY, radius)) {
+    if (camera.isOnScreen(screenX, screenY, radius)) {
       angle = Math.PI - angle;
       if (angle < 0) {
         angle += Math.PI*2;
       }
-      game.context.save();
-      game.context.translate(game.translateX(screenX), game.translateY(screenY));
-      game.context.rotate(angle);
-      game.context.drawImage(image, Math.floor(this.frame) * 64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
-      game.context.restore();
+      context.save();
+      context.translate(camera.translateX(screenX), camera.translateY(screenY));
+      context.rotate(angle);
+      context.drawImage(image, Math.floor(this.frame) * 64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
+      context.restore();
     }
   };
 

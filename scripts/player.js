@@ -27,9 +27,6 @@ define(function (require, exports, module) {
     this.fireEvent("physics.register");
     //we want to be rendered at zIndex 2
     this.fireEvent("render.register", 2);
-    //we have to let the rest of the world know where we are,
-    //unfortunately.
-    this.intervalId = setInterval(this.fireEvent.bind(this, "player.move"), 50);
 
     this.fireEvent("player.health", this.health);
     
@@ -67,25 +64,28 @@ define(function (require, exports, module) {
         this.thrustSoundStart = 0;
       }
 
+      //we have to let the rest of the world know where we are,
+      //unfortunately.
+      this.fireEvent("player.move");
     }
 
   };
 
-  Player.prototype.draw = function(game) {
-    var screenX = game.translateX(game.physics.scaleToPixels(this.physBody.GetPosition().x))
-    , screenY = game.translateY(game.physics.scaleToPixels(this.physBody.GetPosition().y))
+  Player.prototype.draw = function(context, camera, assets) {
+    var screenX = camera.translateX(camera.scaleToPixels(this.physBody.GetPosition().x))
+    , screenY = camera.translateY(camera.scaleToPixels(this.physBody.GetPosition().y))
     , angle = this.physBody.GetAngle()
-    , radius = game.physics.scaleToPixels(this.radius)
-    , image = game.assets['player']
+    , radius = camera.scaleToPixels(this.radius)
+    , image = assets['player']
     , frame = 0;
         
     angle = Math.PI - angle;
     if (angle < 0) {
       angle += Math.PI*2;
     }
-    game.context.save();
-    game.context.translate(screenX, screenY);
-    game.context.rotate(angle);
+    context.save();
+    context.translate(screenX, screenY);
+    context.rotate(angle);
     if (this.thrustLeft) {
       frame = 1;
     } else if (this.thrustRight) {
@@ -93,8 +93,8 @@ define(function (require, exports, module) {
     } else if (this.thrustForward) {
       frame = 3;
     }
-    game.context.drawImage(image, frame*64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
-    game.context.restore();    
+    context.drawImage(image, frame*64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
+    context.restore();    
   };
 
   Player.prototype.fireTheGun = function() {
@@ -192,7 +192,6 @@ define(function (require, exports, module) {
     this.stopListening("tick");
     this.stopListening("keydown");
     this.stopListening("keyup");
-    clearInterval(this.intervalId);
   };
 
   return Player;

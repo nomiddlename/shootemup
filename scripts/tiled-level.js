@@ -25,7 +25,7 @@ define(function (require, exports, module) {
     });
 
     //let the game know how big we are
-    this.fireEvent("boundary", { left: 0, right: this.width, bottom: 0, top: this.height });
+    this.fireEvent("boundary.pixels", { left: 0, right: this.width, bottom: 0, top: this.height });
     //register us for drawing at zIndex = 0 (right at the bottom)
     this.fireEvent("render.register", 0);
     
@@ -35,7 +35,7 @@ define(function (require, exports, module) {
   }
   TiledLevel.prototype = Object.create(Base.prototype);
 
-  TiledLevel.prototype.draw = function(game) {
+  TiledLevel.prototype.draw = function(context, camera, assets) {
     var self = this;
 
     this.config.layers.forEach(function(layer) {
@@ -46,15 +46,21 @@ define(function (require, exports, module) {
           var tileInfo = self.getTileInfo(tileIndex)
           , tilePosition = self.getTilePosition(tileNumber);
           
-          if (game.isOnScreen(tilePosition.x, tilePosition.y, tileInfo.width, tileInfo.height)) {
-            game.context.drawImage(
-              game.assets[tileInfo.image]
+          if (camera.isOnScreen(
+            tilePosition.x, 
+            tilePosition.y, 
+            tileInfo.width, 
+            tileInfo.height, 
+            layer.properties.parallax
+          )) {
+            context.drawImage(
+              assets[tileInfo.image]
               , tileInfo.x
               , tileInfo.y
               , tileInfo.width
               , tileInfo.height
-              , game.translateX(tilePosition.x)
-              , game.translateY(tilePosition.y)
+              , camera.translateX(tilePosition.x, layer.properties.parallax)
+              , camera.translateY(tilePosition.y, layer.properties.parallax)
               , tileInfo.width
               , tileInfo.height
             );
@@ -135,7 +141,7 @@ define(function (require, exports, module) {
     if (this.aliens.length < this.maxAliens) {
       startX = Math.round((Math.random() * (this.width - 800)) + 100);
       startY = Math.round((Math.random() * (this.height - 600)) + 100);
-      this.aliens.push(new Alien(startX / 30, startY / 30, 8, 50, 50));
+      this.aliens.push(new Alien(startX / 30, startY / 30, 5, 50, 50));
     }
   };
 
