@@ -7,7 +7,7 @@
          "opacity":1,
          "properties":
             {
-             "parallax":"0.2"
+             "parallax":"0.75"
             },
          "type":"tilelayer",
          "visible":true,
@@ -22,7 +22,7 @@
          "opacity":1,
          "properties":
             {
-             "parallax":"0.5"
+             "parallax":"0.9"
             },
          "type":"tilelayer",
          "visible":true,

@@ -47,7 +47,7 @@ define(function (require, exports, module) {
   Camera.prototype.updatePosition = function(event) {
     this.centreX = this.scaleToPixels(event.source.physBody.GetPosition().x);
     this.centreY = this.scaleToPixels(event.source.physBody.GetPosition().y);
-
+/*
     this.centreX = clamp(
       this.centreX, 
       this.bounds.left + this.hwidth, 
@@ -58,6 +58,7 @@ define(function (require, exports, module) {
       this.bounds.bottom + this.hheight, 
       this.bounds.top - this.hheight
     );
+*/
   };
 
   Camera.prototype.scaleToWorld = function(valueInPx) {
@@ -69,15 +70,13 @@ define(function (require, exports, module) {
   };
 
   Camera.prototype.translateX = function(gamePosX, parallax) {
-//    parallax = parallax || 1.0;
-    parallax = 1.0;
-    return (gamePosX - this.centreX + this.hwidth) * parallax;
+    parallax = parallax || 1.0;
+    return (gamePosX - (this.centreX * parallax) + this.hwidth) - (this.hwidth * (1 - parallax));
   };
 
   Camera.prototype.translateY = function(gamePosY, parallax) {
-//    parallax = parallax || 1.0;
-    parallax = 1.0;
-    return (gamePosY - this.centreY + this.hheight) * parallax;
+    parallax = parallax || 1.0;
+    return (gamePosY - (this.centreY * parallax) + this.hheight) - (this.hheight * (1 - parallax));
   };
 
   /**
