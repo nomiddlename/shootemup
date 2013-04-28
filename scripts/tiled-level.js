@@ -29,7 +29,7 @@ define(function (require, exports, module) {
     //register us for drawing at zIndex = 0 (right at the bottom)
     this.fireEvent("render.register", 0);
     
-    this.on("game.start", this.setupAlienHordes);
+//    this.on("game.start", this.setupAlienHordes);
     this.on("enemy.death", this.spawnMoreAliens);
 
   }
@@ -93,16 +93,16 @@ define(function (require, exports, module) {
       image: tileset.image,
       width: tileset.tilewidth,
       height: tileset.tileheight,
-      x: Math.floor((tileIndex - tileset.firstgid) % tileset.numXTiles) * tileset.tilewidth,
-      y: Math.floor((tileIndex - tileset.firstgid) / tileset.numXTiles) * tileset.tileheight
+      x: ((tileIndex - tileset.firstgid) % tileset.numXTiles) * tileset.tilewidth,
+      y: Math.round((tileIndex - tileset.firstgid) / tileset.numXTiles) * tileset.tileheight
     };
   };
 
   //given the tile's position in the data list, work out the screen position
   TiledLevel.prototype.getTilePosition = function(tileNumber) {
     return {
-      x: Math.floor(tileNumber % this.config.width) * this.config.tilewidth,
-      y: Math.floor(tileNumber / this.config.width) * this.config.tileheight
+      x: (tileNumber % this.config.width) * this.config.tilewidth,
+      y: Math.round(tileNumber / this.config.width) * this.config.tileheight
     };
   };
 

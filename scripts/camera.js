@@ -71,12 +71,12 @@ define(function (require, exports, module) {
 
   Camera.prototype.translateX = function(gamePosX, parallax) {
     parallax = parallax || 1.0;
-    return (gamePosX - (this.centreX * parallax) + this.hwidth) - (this.hwidth * (1 - parallax));
+    return Math.round(gamePosX - (this.centreX * parallax) + this.hwidth) - (this.hwidth * (1 - parallax));
   };
 
   Camera.prototype.translateY = function(gamePosY, parallax) {
     parallax = parallax || 1.0;
-    return (gamePosY - (this.centreY * parallax) + this.hheight) - (this.hheight * (1 - parallax));
+    return Math.round(gamePosY - (this.centreY * parallax) + this.hheight) - (this.hheight * (1 - parallax));
   };
 
   /**
