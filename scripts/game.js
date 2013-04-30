@@ -125,6 +125,11 @@ define(function (require, exports, module) {
     if (key === ' ') {
       event.preventDefault();
     }
+
+    //toggle debug mode
+    if (key === 'd' && event.type === 'keyup') {
+      this.fireEvent("debug");
+    }
   };
 
   return Game;

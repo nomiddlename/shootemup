@@ -175,7 +175,7 @@ define(function (require, exports, module) {
   Player.prototype.hit = function(other, impulse) {
     if (other.health) {
       other.health -= this.damage;
-    }
+    } 
   };
   
   Player.prototype.reduceHealth = function(amount) {

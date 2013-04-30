@@ -12,6 +12,8 @@ define(function (require, exports, module) {
   function TiledLevel(config) {
     Base.call(this);
 
+    this.debug = false;
+
     this.config = config;
     this.maxAliens = 100;
     this.aliens = [];
@@ -31,9 +33,14 @@ define(function (require, exports, module) {
     
     this.on("game.start", this.setupAlienHordes);
     this.on("enemy.death", this.spawnMoreAliens);
+    this.on("debug", this.toggleDebug);
 
   }
   TiledLevel.prototype = Object.create(Base.prototype);
+
+  TiledLevel.prototype.toggleDebug = function(event) {
+    this.debug = !this.debug;
+  };
 
   TiledLevel.prototype.draw = function(context, camera, assets) {
     var self = this;
@@ -53,6 +60,7 @@ define(function (require, exports, module) {
             tileInfo.height, 
             layer.properties.parallax
           )) {
+
             context.drawImage(
               assets[tileInfo.image]
               , tileInfo.x
@@ -64,6 +72,19 @@ define(function (require, exports, module) {
               , tileInfo.width
               , tileInfo.height
             );
+
+            if (self.debug) {
+              context.beginPath();
+              context.font = "16px Arial";
+              context.fillStyle = "blue";
+              context.textAlign = "center";
+              context.fillText(
+                tileNumber, 
+                camera.translateX(tilePosition.x, layer.properties.parallax),
+                camera.translateY(tilePosition.y, layer.properties.parallax)
+              );
+              context.closePath();
+            }
           }
         }
       });
@@ -94,7 +115,7 @@ define(function (require, exports, module) {
       width: tileset.tilewidth,
       height: tileset.tileheight,
       x: ((tileIndex - tileset.firstgid) % tileset.numXTiles) * tileset.tilewidth,
-      y: Math.round((tileIndex - tileset.firstgid) / tileset.numXTiles) * tileset.tileheight
+      y: Math.floor((tileIndex - tileset.firstgid) / tileset.numXTiles) * tileset.tileheight
     };
   };
 
@@ -102,7 +123,7 @@ define(function (require, exports, module) {
   TiledLevel.prototype.getTilePosition = function(tileNumber) {
     return {
       x: (tileNumber % this.config.width) * this.config.tilewidth,
-      y: Math.round(tileNumber / this.config.width) * this.config.tileheight
+      y: Math.floor(tileNumber / this.config.width) * this.config.tileheight
     };
   };
 
