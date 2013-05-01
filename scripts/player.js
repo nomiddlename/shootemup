@@ -119,7 +119,7 @@ define(function (require, exports, module) {
       context.beginPath();
       context.strokeStyle = this.shieldColour();
       context.lineWidth = 2;
-      context.arc(0, 0, radius, 0, Math.PI*2, true);
+      context.arc(0, 0, radius + Math.round((this.shieldBumpTime / 250) * 8), 0, Math.PI*2, true);
       context.stroke();
       context.closePath();
     }
