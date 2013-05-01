@@ -9,11 +9,12 @@ define(function (require, exports, module) {
   var Base = require('./base')
   , Vec2 = require('./box2d').Common.Math.b2Vec2
   , PewPewGun = require('./guns')
+  , explosion = require('./explosion')
   , colours = [
-    "red"
-    , "orange"
-    , "yellow"
-    , "green"
+    "rgba(200, 20, 20, OPACITY)"
+    , "rgba(200, 100, 20, OPACITY)"
+    , "rgba(100, 200, 20, OPACITY)"
+    , "rgba(20, 200, 20, OPACITY)"
   ];
 
   function Player(definition) {
@@ -117,18 +118,19 @@ define(function (require, exports, module) {
     context.drawImage(image, frame*64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
     if (this.shieldBumpTime >= 0) {
       context.beginPath();
-      context.strokeStyle = this.shieldColour();
+      context.strokeStyle = this.shieldColour(this.shieldBumpTime);
       context.lineWidth = 2;
-      context.arc(0, 0, radius + Math.round((this.shieldBumpTime / 250) * 8), 0, Math.PI*2, true);
+      context.arc(0, 0, radius + Math.round((this.shieldBumpTime / 250) * 5), 0, Math.PI*2, true);
       context.stroke();
       context.closePath();
     }
     context.restore();    
   };
 
-  Player.prototype.shieldColour = function() {
-    var index = Math.floor(Math.min(200, this.health - 50) / 50);
-    return colours[index];
+  Player.prototype.shieldColour = function(time) {
+    var index = Math.max(0, Math.floor(Math.min(200, this.health - 50) / 50));
+    console.log("health = ", this.health, " index = ", index, " time = ", time);
+    return colours[index].replace('OPACITY', 255 - time);
   };
 
   Player.prototype.fireTheGun = function() {
@@ -220,6 +222,7 @@ define(function (require, exports, module) {
   };
 
   Player.prototype.die = function() {
+    explosion.create(this.physBody.GetPosition());
     this.fireEvent("player.death");
     this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
     this.fireEvent("render.deregister", 2);
