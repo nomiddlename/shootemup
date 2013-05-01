@@ -129,7 +129,6 @@ define(function (require, exports, module) {
 
   Player.prototype.shieldColour = function(time) {
     var index = Math.max(0, Math.floor(Math.min(200, this.health - 50) / 50));
-    console.log("health = ", this.health, " index = ", index, " time = ", time);
     return colours[index].replace('OPACITY', 255 - time);
   };
 
