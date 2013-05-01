@@ -39,7 +39,7 @@ define(function (require, exports, module) {
   }
   
   Display.prototype.draw = function(context, camera) {
-    this.write(context, small, "start", "Health: " + this.playerHealth, 50, 50);
+    this.write(context, small, "start", "Shields: " + this.playerHealth, 50, 50);
     this.write(context, small, "end", "Aliens Destroyed: " + this.score, camera.width - 50, 50);
     
     //if game.over, let them know

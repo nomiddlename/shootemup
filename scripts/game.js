@@ -53,7 +53,7 @@ define(function (require, exports, module) {
         posX: this.camera.scaleToWorld(this.level.width / 2),    //in game coords
         posY: this.camera.scaleToWorld(this.level.height / 2),    //in game coords
         radius: 0.8,
-        health: 200,
+        health: 250,
         damage: 200,
         keys: {
           left: 37,

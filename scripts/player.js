@@ -8,7 +8,13 @@ if (typeof module === 'object' && typeof define !== 'function') {
 define(function (require, exports, module) {
   var Base = require('./base')
   , Vec2 = require('./box2d').Common.Math.b2Vec2
-  , PewPewGun = require('./guns');
+  , PewPewGun = require('./guns')
+  , colours = [
+    "red"
+    , "orange"
+    , "yellow"
+    , "green"
+  ];
 
   function Player(definition) {
     Base.call(this);
@@ -22,6 +28,7 @@ define(function (require, exports, module) {
     this.thrustRight = false;
     this.thrustForward = false;
     this.thrustSoundStart = 0;
+    this.shieldBumpTime = -1;
     
     //we want to take part in the physics of the world
     this.fireEvent("physics.register");
@@ -64,6 +71,20 @@ define(function (require, exports, module) {
         this.thrustSoundStart = 0;
       }
 
+      if (this.shieldBump && this.shieldBumpTime < 0) {
+        this.shieldBumpTime = 0;
+        this.shieldBump = false;
+        this.fireEvent("sounds", { name: "bounce", position: this.physBody.GetPosition() });
+      } 
+
+      if (this.shieldBumpTime >= 0) {
+        this.shieldBumpTime += tockMs;
+      }
+
+      if (this.shieldBumpTime > 250) {
+        this.shieldBumpTime = -1;
+      }
+      
       //we have to let the rest of the world know where we are,
       //unfortunately.
       this.fireEvent("player.move");
@@ -94,7 +115,20 @@ define(function (require, exports, module) {
       frame = 3;
     }
     context.drawImage(image, frame*64, 0, 64, 64, -radius, -radius, 2*radius, 2*radius);
+    if (this.shieldBumpTime >= 0) {
+      context.beginPath();
+      context.strokeStyle = this.shieldColour();
+      context.lineWidth = 2;
+      context.arc(0, 0, radius, 0, Math.PI*2, true);
+      context.stroke();
+      context.closePath();
+    }
     context.restore();    
+  };
+
+  Player.prototype.shieldColour = function() {
+    var index = Math.floor(Math.min(200, this.health - 50) / 50);
+    return colours[index];
   };
 
   Player.prototype.fireTheGun = function() {
@@ -182,6 +216,7 @@ define(function (require, exports, module) {
     this.health -= amount;
     this.health = Math.max(0, this.health);
     this.fireEvent("player.health", this.health);
+    this.shieldBump = true;
   };
 
   Player.prototype.die = function() {
