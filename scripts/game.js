@@ -34,7 +34,8 @@ define(function (require, exports, module) {
 	    { name: 'alien', file: 'assets/alien.png' },
 	    { name: 'player', file: 'assets/ship.png' },
       { name: 'city.jpg', file: 'assets/city.jpg' },
-      { name: 'clouds.png', file: 'assets/clouds.png' }
+      { name: 'clouds.png', file: 'assets/clouds.png' },
+      { name: 'shields', file: 'assets/shields.png' }
     ]);
     this.physics = new PhysicsEngine();
     this.sounds = new SoundEngine();                    

@@ -8,7 +8,8 @@ if (typeof module === 'object' && typeof define !== 'function') {
 define(function (require, exports, module) {
   var Base = require('./base')
   , Vec2 = require('./box2d').Common.Math.b2Vec2
-  , explosion = require('./explosion');
+  , explosion = require('./explosion')
+  , shields = require('./shields');
 
   function Alien(posX, posY, speed, health, damage) {
     this.position = new Vec2(posX, posY);
@@ -90,6 +91,7 @@ define(function (require, exports, module) {
 
   Alien.prototype.die = function() {
     explosion.create(this.physBody.GetPosition());
+    shields.create(0.5, this.physBody.GetPosition(), this.physBody.GetLinearVelocity());
     this.fireEvent("enemy.death");
     this.fireEvent("sounds", { name: "boom", position: this.physBody.GetPosition() });
     this.destroy();

@@ -127,8 +127,12 @@ define(function (require, exports, module) {
     context.restore();    
   };
 
+  function clamp(thing, min, max) {
+    return Math.min(max, Math.max(thing, min));
+  }
+
   Player.prototype.shieldColour = function(time) {
-    var index = Math.max(0, Math.floor(Math.min(200, this.health - 50) / 50));
+    var index = Math.floor(clamp((this.health/50) - 1, 0, 3.99));
     return colours[index].replace('OPACITY', 255 - time);
   };
 
@@ -211,6 +215,10 @@ define(function (require, exports, module) {
     if (other.health) {
       other.health -= this.damage;
     } 
+  };
+
+  Player.prototype.increaseShields = function(amount) {
+    this.health += amount;
   };
   
   Player.prototype.reduceHealth = function(amount) {
