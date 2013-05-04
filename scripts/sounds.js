@@ -21,9 +21,10 @@ define(function (require, exports, module) {
 
 	    this.sounds = {
 	      "pew-pew": "assets/pew.mp3",
-	      "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect01.wav",
+	      "bounce": "assets/JBM_Sfxr_pack_1/samples/collect/collect10.wav",
 	      "boom": "assets/sounds/explosions/6.wav",
-	      "thrust": "assets/thrust.mp3"
+	      "thrust": "assets/thrust.mp3",
+        "shieldup": "assets/JBM_Sfxr_pack_1/samples/powerup/powerup07.wav"
 	    };
 	    this.soundBuffers = {};
 	    this.loadSounds();
