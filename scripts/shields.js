@@ -26,10 +26,7 @@ define(function (require, exports, module) {
   Shields.prototype = Object.create(Base.prototype);
 
   Shields.prototype.tick = function(event) {
-    this.frame += 1;
-    if (this.frame > 7) {
-      this.frame = 0;
-    }
+    this.frame = Math.floor(8 * (Date.now() % 1000) / 1000);
 
     this.lifetime -= event.data;
     if (this.lifetime < 0) {
