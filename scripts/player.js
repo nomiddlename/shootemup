@@ -219,6 +219,7 @@ define(function (require, exports, module) {
 
   Player.prototype.increaseShields = function(amount) {
     this.health += amount;
+    this.fireEvent("sounds", { name: "shieldup", position: this.physBody.GetPosition() });
   };
   
   Player.prototype.reduceHealth = function(amount) {
