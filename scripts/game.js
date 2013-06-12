@@ -33,7 +33,7 @@ define(function (require, exports, module) {
       { name: 'boom', file: 'assets/boom3_0.png' },
 	    { name: 'alien', file: 'assets/alien.png' },
 	    { name: 'player', file: 'assets/ship.png' },
-      { name: 'city.jpg', file: 'assets/city.jpg' },
+      { name: 'sea.png', file: 'assets/sea.png' },
       { name: 'clouds.png', file: 'assets/clouds.png' },
       { name: 'shields', file: 'assets/shields.png' }
     ]);
