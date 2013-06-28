@@ -14,7 +14,7 @@ define(function (require, exports, module) {
   , Player = require('./player')
   , TiledLevel = require('./tiled-level')
   , Display = require('./display')
-  , firstLevel = require('json!../assets/city-bigger.json')
+  , firstLevel = require('json!../assets/stars.json')
   , fullscreen = require('./fullscreen')
   ;
 
@@ -33,8 +33,8 @@ define(function (require, exports, module) {
       { name: 'boom', file: 'assets/boom3_0.png' },
 	    { name: 'alien', file: 'assets/alien.png' },
 	    { name: 'player', file: 'assets/ship.png' },
-      { name: 'sea.png', file: 'assets/sea.png' },
-      { name: 'clouds.png', file: 'assets/clouds.png' },
+      { name: 'stars.png', file: 'assets/stars.png' },
+      { name: 'stars-transparent.png', file: 'assets/stars-transparent.png' },
       { name: 'shields', file: 'assets/shields.png' }
     ]);
     this.physics = new PhysicsEngine();
