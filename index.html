@@ -1,18 +1,53 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <title>Dodgy Shoot 'Em Up</title>
+<link href='http://fonts.googleapis.com/css?family=Wendy+One' rel='stylesheet' type='text/css'>
 <script data-main="scripts/main" src="scripts/require.js"></script>
 <style type="text/css">
 body {
-  background: black;
+  font-family: 'Wendy One', sans-serif;
+  background: #366;
   color: white;
+  width: 800px;
+  margin: auto;
 }
 
+h1 {
+  font-size: 64px;
+  font-style: italic;
+  text-shadow: black 5px 5px;
+}
+
+h2 {
+  font-size: 32px;
+  font-style: italic;
+  text-shadow: black 2px 2px;
+}
+
+p, li {
+  color: #ccc;
+  font-size: 20px;
+  text-shadow: black 1px 1px;
+}
+
+a {
+  color: #aad;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #88d;
+  text-shadow: black 2px 2px;
+}
+
+canvas {
+  border: 2px solid grey;
+}
 </style>
 </head>
 
 <body>
-<h1>Dodgy Shoot 'Em Up</h1>
+<h1>Dodgy Shoot 'Em Up!</h1>
 <canvas id="theCanvas" width="800" height="600">
 No canvas? Arse biscuits, no game for you.
 </canvas>
