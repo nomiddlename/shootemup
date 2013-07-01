@@ -1,6 +1,6 @@
 # Dodgy Shoot 'Em Up
 
-Just an exercise in 2D HTML5 Canvas programming. I wouldn't use this as an example of how to write games.
+Just an exercise in 2D HTML5 Canvas programming. I wouldn't use this as an example of how to write games. <a href="http://nomiddlename.github.io/shootemup">Try it out</a>.
 
 ## Credits
 
