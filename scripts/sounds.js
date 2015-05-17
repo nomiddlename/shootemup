@@ -15,7 +15,7 @@ define(function (require, exports, module) {
 
     if (AudioContext) {
 	    this.context = new AudioContext();
-	    this.gainNode = this.context.createGainNode();
+	    this.gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
 	    this.gainNode.connect(this.context.destination);
 	    this.playerPosition = null;
 
@@ -41,13 +41,13 @@ define(function (require, exports, module) {
     , position = event.data.position
     , volume = this.volumeByDistance(position)
     , source;
-    
+
     if (this.soundBuffers[soundName]) {
       source = this.context.createBufferSource();
       source.buffer = this.soundBuffers[soundName];
       source.connect(this.gainNode);
       this.gainNode.gain.value = volume;
-      source.noteOn(0);
+      source.noteOn ? source.noteOn(0) : source.start();
     }
   };
 
@@ -61,11 +61,11 @@ define(function (require, exports, module) {
     var volume = 0
     , distance
     , position = soundPosition.Copy();
-    
+
     if (this.playerPosition) {
       position.Subtract(this.playerPosition);
       distance = position.Length();
-      
+
       if (distance > 60) {
         volume = 0;
       } else {
@@ -75,7 +75,7 @@ define(function (require, exports, module) {
 
     return volume;
   };
-  
+
   SoundEngine.prototype.loadSounds = function() {
     var bufferLoader = new BufferLoader(
       this.context,
